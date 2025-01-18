@@ -34,8 +34,8 @@ class ExamController extends Controller
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
         ]);
-        Pelatihan::where('id', $id)->update([
-            'judul' => $request->nama,
+        Exam::where('id', $id)->update([
+            'judul' => $request->judul,
         ]);
         return back()->with('success', 'Data berhasil disimpan.');
     }

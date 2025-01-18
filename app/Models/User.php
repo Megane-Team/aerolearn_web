@@ -69,6 +69,9 @@ class User extends Authenticatable
 
         return null; // Jika tidak ada keduanya
     }
+    function sertif(){
+        return $this->hasMany(Sertifikat::class,'id_peserta');
+    }
     function notif()
     {
         return $this->hasMany(Notifications::class, 'id_peserta')

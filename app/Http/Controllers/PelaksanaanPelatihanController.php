@@ -125,7 +125,6 @@ class PelaksanaanPelatihanController extends Controller
         // Redirect kembali dengan pesan sukses
         return back()->with('success', 'Data berhasil diperbarui.');
     }
-
     public function hapus($id)
     {
         $data = PelaksanaanPelatihan::findOrFail($id);
@@ -166,7 +165,7 @@ class PelaksanaanPelatihanController extends Controller
             }
             $nilai[$k] = Nilai::where('id_peserta', $v->id_peserta)->where('id_pelaksanaan_pelatihan', $id)->first();
             $feedback[$k] = Feedback::where('id_user', $v->id_peserta)->where('id_pelaksanaanPelatihan', $id)->first();
-            $sertif[$k] = Sertifikat::where('id_peserta', $v->id_peserta)->where('id_pelatihan', $id)->first();
+            $sertif[$k] = Sertifikat::where('id_peserta', $v->id_peserta)->where('id_pelaksanaan_pelatihan', $id)->first();
         }
         return view('pelaksanaan.peserta', [
             'data' => $data,
@@ -229,13 +228,13 @@ class PelaksanaanPelatihanController extends Controller
         $data = PelaksanaanPelatihan::findOrFail($id);
         foreach ($data->tablepeserta as $key => $value) {
             // Cek apakah sertifikat sudah ada
-            $existingSertifikat = Sertifikat::where('id_pelatihan', $data->id)
+            $existingSertifikat = Sertifikat::where('id_pelaksanaan_pelatihan', $data->id)
                 ->where('id_peserta', $value->id_peserta)
                 ->first();
 
             if (!$existingSertifikat) {
                 Sertifikat::create([
-                    'id_pelatihan' => $data->id,
+                    'id_pelaksanaan_pelatihan' => $data->id,
                     'id_peserta' => $value->id_peserta,
                     'masa_berlaku' => now()->addYears(3)->toDateString(),
                     'sertifikasi' => $data->pelatihan->nama
@@ -300,6 +299,16 @@ class PelaksanaanPelatihanController extends Controller
     {
         $data = PermintaanTraining::find($id);
         $data->status = $t == 1 ? 'terima' : 'tolak';
+        if($t == 1){
+            $data->status = 'instruktur menunggu';
+        }else if($t  == 2){
+            $data->status = 'tolak';
+        }else if($t == 3){
+            $data->status = 'terima';
+        }else if($t == 4){
+            $data->status = 'instruktur menolak';
+        }
+
         $data->save();
         if ($t == 1) {
             $instruktur = User::where('user_role', 'instruktur')->first();

@@ -52,9 +52,9 @@
                                             <td class="text-nowrap">
                                                 <span
                                                     class="badge 
-                                                    @if ($v->permintaantraining->status == 'menunggu') bg-warning
+                                                    @if ($v->permintaantraining->status == 'menunggu' || $v->permintaantraining->status == 'instruktur menunggu') bg-warning
                                                     @elseif($v->permintaantraining->status == 'terima') bg-success
-                                                    @elseif($v->permintaantraining->status == 'tolak') bg-danger @endif">
+                                                    @elseif($v->permintaantraining->status == 'tolak' || $v->permintaantraining->status == 'instruktur menolak') bg-danger @endif">
                                                     {{ $v->permintaantraining->status }}
                                                 </span>
                                                 @if (Auth::user()->user_role == 'kepala pelatihan')
@@ -62,7 +62,16 @@
                                                         <br>
                                                         <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 1]) }}"
                                                             class="btn btn-sm btn-success">terima</a>
-                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 1]) }}"
+                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 2]) }}"
+                                                            class="btn btn-sm btn-danger">tolak</a>
+                                                    @endif
+                                                @endif
+                                                @if (Auth::user()->user_role == 'instruktur')
+                                                    @if ($v->permintaantraining->status == 'instruktur menunggu')
+                                                        <br>
+                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 3]) }}"
+                                                            class="btn btn-sm btn-success">terima</a>
+                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 4]) }}"
                                                             class="btn btn-sm btn-danger">tolak</a>
                                                     @endif
                                                 @endif
@@ -77,10 +86,8 @@
                                                     <a href="{{ route('pelaksanaan-alat.index', $v->id) }}"
                                                         class="btn btn-info btn-sm">Alat</a>
                                                 @endif
-                                                @if ($v->permintaantraining->status == 'terima')
-                                                    <a href="{{ route('pelaksanaan-peserta.index', $v->id) }}"
-                                                        class="btn btn-primary btn-sm">peserta</a>
-                                                @endif
+                                                <a href="{{ route('pelaksanaan-peserta.index', $v->id) }}"
+                                                    class="btn btn-primary btn-sm">peserta</a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -109,7 +116,7 @@
                             <div class="mb-3">
                                 <label for="id_pelatihan" class="form-label">ID Pelatihan</label>
                                 <select class="form-select" id="id_pelatihan" name="id_pelatihan" required>
-                                    <option disabled selected>Pilih Ruangan</option>
+                                    <option disabled selected>Pilih Pelatihan</option>
                                     @foreach ($pelatihan as $k => $v)
                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                     @endforeach
@@ -123,7 +130,7 @@
                                 <select class="form-select" id="id_instruktur" name="id_instruktur" required>
                                     <option disabled selected>Pilih Instruktur</option>
                                     @foreach ($instruktur as $k => $v)
-                                        <option value="{{ $v->id }}">{{ $v->email }}</option>
+                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                     @endforeach
                                     <!-- Tambahkan opsi lainnya sesuai kebutuhan -->
                                 </select>

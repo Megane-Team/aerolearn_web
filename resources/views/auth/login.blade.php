@@ -1,7 +1,3 @@
-<?php 
-    use Illuminate\Support\Fascades\Route;
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,3 +109,4 @@
 </body>
 
 </html>
+Z

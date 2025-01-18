@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('sertifikasi');
             $table->date('masa_berlaku');
             $table->foreignId('id_peserta')->constrained('users')->onDelete('cascade');
-            $table->foreignId('id_pelatihan')->constrained('pelaksanaan_pelatihan')->onDelete('cascade');
+            $table->foreignId('id_pelaksanaan_pelatihan')->constrained('pelaksanaan_pelatihan')->onDelete('cascade');
             $table->timestamps();
         });
     }
