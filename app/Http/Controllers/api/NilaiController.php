@@ -22,16 +22,4 @@ class NilaiController extends Controller
             'message' => 'Success',
         ], 200);
     }
-    public function getNilai(Request $request): JsonResponse
-    {
-        $data = Nilai::where(
-            'id_pelaksanaan_pelatihan',
-            $request->id_pelaksanaan_pelatihan
-        )->where('id_peserta', $request->id_peserta)->first();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'data' => $data
-        ], 200);
-    }
 }

@@ -1,21 +1,14 @@
 <?php
 
-use App\Http\Controllers\AlatController;
+use App\Http\Controllers\api\LoginController as ApiLoginController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\PelaksanaanPelatihanController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\RuanganController;
-use App\Http\Controllers\UserController;
-use App\Models\Karyawan;
-use App\Models\PelaksanaanPelatihan;
-use App\Models\Pelatihan;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 Auth::routes(['register' => false]);
@@ -26,35 +19,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/peserta-update/{type}/{id}', [PesertaController::class, 'update'])->name('peserta.update');
     Route::get('/peserta-hapus/{type}/{id}', [PesertaController::class, 'hapus'])->name('peserta.hapus');
 
-    Route::get('/user', [UserController::class, 'index'])->name('user.index');
-    Route::post('/user-tambah', [UserController::class, 'tambah'])->name('user.tambah');
-    Route::post('/user-update/{id}', [UserController::class, 'update'])->name('user.update');
-    Route::get('/user-hapus/{id}', [UserController::class, 'hapus'])->name('user.hapus');
+    Route::get('pelatihan',[PelatihanController::class,'index'])->name('pelatihan.index');
+    Route::post('pelatihan-tambah',[PelatihanController::class,'tambah'])->name('pelatihan.tambah');
+    Route::post('pelatihan-update/{id}',[PelatihanController::class,'update'])->name('pelatihan.update');
+    Route::get('pelatihan-hapus/{id}',[PelatihanController::class,'hapus'])->name('pelatihan.hapus');
 
-    Route::get('/alat', [AlatController::class, 'index'])->name('alat.index');
-    Route::post('/alat-tambah', [AlatController::class, 'tambah'])->name('alat.tambah');
-    Route::post('/alat-update/{id}', [AlatController::class, 'update'])->name('alat.update');
-    Route::get('/alat-hapus/{id}', [AlatController::class, 'hapus'])->name('alat.hapus');
+    Route::get('pelatihan-materi/{id}',[MateriController::class,'index'])->name('materi.index');
+    Route::post('materi-tambah',[MateriController::class,'tambah'])->name('materi.tambah');
+    Route::post('materi-update/{id}',[MateriController::class,'update'])->name('materi.update');
+    Route::get('materi-hapus/{id}',[MateriController::class,'hapus'])->name('materi.hapus');
 
-    Route::get('/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
-    Route::post('/ruangan-tambah', [RuanganController::class, 'tambah'])->name('ruangan.tambah');
-    Route::post('/ruangan-update/{id}', [RuanganController::class, 'update'])->name('ruangan.update');
-    Route::get('/ruangan-hapus/{id}', [RuanganController::class, 'hapus'])->name('ruangan.hapus');
-
-    Route::get('pelatihan', [PelatihanController::class, 'index'])->name('pelatihan.index');
-    Route::post('pelatihan-tambah', [PelatihanController::class, 'tambah'])->name('pelatihan.tambah');
-    Route::post('pelatihan-update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
-    Route::get('pelatihan-hapus/{id}', [PelatihanController::class, 'hapus'])->name('pelatihan.hapus');
-
-    Route::get('pelatihan-materi/{id}', [MateriController::class, 'index'])->name('materi.index');
-    Route::post('materi-tambah', [MateriController::class, 'tambah'])->name('materi.tambah');
-    Route::post('materi-update/{id}', [MateriController::class, 'update'])->name('materi.update');
-    Route::get('materi-hapus/{id}', [MateriController::class, 'hapus'])->name('materi.hapus');
-
-    Route::get('pelatihan-exam/{id}', [ExamController::class, 'index'])->name('exam.index');
-    Route::post('exam-tambah', [ExamController::class, 'tambah'])->name('exam.tambah');
-    Route::post('exam-update/{id}', [ExamController::class, 'update'])->name('exam.update');
-    Route::get('exam-hapus/{id}', [ExamController::class, 'hapus'])->name('exam.hapus');
+    Route::get('pelatihan-exam/{id}',[ExamController::class,'index'])->name('exam.index');
+    Route::post('exam-tambah',[ExamController::class,'tambah'])->name('exam.tambah');
+    Route::post('exam-update/{id}',[ExamController::class,'update'])->name('exam.update');
+    Route::get('exam-hapus/{id}',[ExamController::class,'hapus'])->name('exam.hapus');
 
     Route::get('exam-question/{id}', [QuestionController::class, 'index'])->name('question.index');
     Route::post('question-tambah', [QuestionController::class, 'tambah'])->name('question.tambah');

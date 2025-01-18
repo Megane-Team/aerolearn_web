@@ -65,42 +65,7 @@ class ExamController extends Controller
             'message' => 'Success',
         ], 200);
     }
-    public function getQuestion($id): JsonResponse
-    {
-        $data = Question::where('id_exam', $id)->get();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'res' => $data
-        ], 200);
-    }
-    public function getOption($id): JsonResponse
-    {
-        $data = OpsiJawaban::where('id_question', $id)->get();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'res' => $data
-        ], 200);
-    }
-    public function getJawaban($id): JsonResponse
-    {
-        $data = Jawaban::where('id_peserta', $id)->get();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'res' => $data
-        ], 200);
-    }
-    public function getJawabanBenar($id): JsonResponse
-    {
-        $data = JawabanBenar::where('id_question', $id)->first();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'res' => $data
-        ], 200);
-    }
+   
     public function feedback($id, Request $request){
         $f = FeedbackQuestion::create([
             'text' => $request->text
