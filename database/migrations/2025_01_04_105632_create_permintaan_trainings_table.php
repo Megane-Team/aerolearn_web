@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('permintaanTraining', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_pelaksanaanPelatihan')->constrained('pelaksanaan_pelatihan')->onDelete('cascade');
-            $table->enum('status',['terima','menunggu','tolak'])->default('menunggu');
+            $table->enum('status',['terima','menunggu','instruktur menunggu','instruktur menolak','tolak'])->default('menunggu');
             $table->timestamps();
         });
     }

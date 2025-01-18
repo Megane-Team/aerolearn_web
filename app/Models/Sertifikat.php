@@ -17,7 +17,7 @@ class Sertifikat extends Model
     }
     public function pelaksanaan()
     {
-        return $this->belongsTo(PelaksanaanPelatihan::class,'id_pelatihan');
+        return $this->belongsTo(PelaksanaanPelatihan::class,'id_pelaksanaan_pelatihan');
     }
     public function getLinkAttribute()
     {

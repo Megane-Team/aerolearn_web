@@ -20,7 +20,7 @@
 
 
                         <div class="table-responsive">
-                            <table class="table datatable">
+                            <table class="table datatable not">
                                 <thead>
                                     <tr class="text-nowrap">
                                         <th>NIK</th>
@@ -56,6 +56,9 @@
                                             <td>{{ $v->internal->tmt }}</td>
                                             <td>{{ $v->internal->jobcode }}</td>
                                             <td>
+
+                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#sertif-internal-{{ $v->id }}">Sertif</button>
                                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#edit-internal-{{ $v->id }}">Edit</button>
                                                 <a href="{{ route('peserta.hapus', [1, $v->id]) }}"
@@ -65,6 +68,39 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @php
+                                $currentPage = request()->get('page', 1); // Halaman saat ini (default 1)
+                                $previousPage = $currentPage > 1 ? $currentPage - 1 : null; // Previous page
+                                $nextPage = $currentPage + 1; // Next page
+                            @endphp
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {{-- Previous Page --}}
+                                    @if ($previousPage)
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="{{ url()->current() }}?page={{ $previousPage }}">Previous</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Current Page --}}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ $currentPage }}</span>
+                                    </li>
+
+                                    {{-- Next Page --}}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                            href="{{ url()->current() }}?page={{ $nextPage }}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
                         </div>
 
                     </div>
@@ -80,7 +116,7 @@
                             </button>
                         </div>
                         <div class="table-responsive">
-                            <table class="table datatable">
+                            <table class="table datatable not">
                                 <thead>
                                     <tr>
                                         <th>Nama</th>
@@ -104,6 +140,8 @@
                                             <td>{{ $v->eksternal->email }}</td>
                                             <td>{{ $v->eksternal->no_telp }}</td>
                                             <td>
+                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#sertif-eksternal-{{ $v->id }}">Sertif</button>
                                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#edit-eksternal-{{ $v->id }}">Edit</button>
                                                 <a href="{{ route('peserta.hapus', [2, $v->id]) }}"
@@ -113,6 +151,38 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @php
+                                $currentPage = request()->get('page', 1); // Halaman saat ini (default 1)
+                                $previousPage = $currentPage > 1 ? $currentPage - 1 : null; // Previous page
+                                $nextPage = $currentPage + 1; // Next page
+                            @endphp
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {{-- Previous Page --}}
+                                    @if ($previousPage)
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="{{ url()->current() }}?page={{ $previousPage }}">Previous</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Current Page --}}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ $currentPage }}</span>
+                                    </li>
+
+                                    {{-- Next Page --}}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                            href="{{ url()->current() }}?page={{ $nextPage }}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
 
                     </div>
@@ -408,6 +478,46 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="sertif-internal-{{ $v->id }}" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Sertif</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>no</th>
+                                    <th>sertifikasi</th>
+                                    <th>masa berlaku</th>
+                                    <th>lihat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($v->sertif as $key => $value)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $value->sertifikasi }}</td>
+                                        <td>{{ $value->masa_berlaku }}</td>
+                                        <td><a href="{{ route('pelaksanaan-peserta.sertif', $value->id) }}"
+                                                class="btn btn-sm btn-primary">lihat</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endforeach
     @foreach ($data['eksternal'] as $k => $v)
         <div class="modal fade" id="edit-eksternal-{{ $v->id }}" tabindex="-1"
@@ -426,33 +536,42 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="nama" class="form-label">Nama</label>
-                                        <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama', $v->eksternal->nama) }}" required>
+                                        <input type="text" class="form-control" id="nama" name="nama"
+                                            value="{{ old('nama', $v->eksternal->nama) }}" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                        <input type="date" class="form-control" id="tanggal_lahir" value="{{ old('tanggal_lahir', $v->eksternal->tanggal_lahir) }}" name="tanggal_lahir" required>
+                                        <input type="date" class="form-control" id="tanggal_lahir"
+                                            value="{{ old('tanggal_lahir', $v->eksternal->tanggal_lahir) }}"
+                                            name="tanggal_lahir" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
-                                        <input type="text" class="form-control" id="tempat_lahir" value="{{ old('tempat_lahir', $v->eksternal->tempat_lahir) }}" name="tempat_lahir" required>
+                                        <input type="text" class="form-control" id="tempat_lahir"
+                                            value="{{ old('tempat_lahir', $v->eksternal->tempat_lahir) }}"
+                                            name="tempat_lahir" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Jenis Kelamin</label>
                                         <div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" id="jenis_kelamin_l" name="jenis_kelamin" value="L" 
-                                                    {{ old('jenis_kelamin', $v->eksternal->jenis_kelamin) == 'L' ? 'checked' : '' }} required>
+                                                <input class="form-check-input" type="radio" id="jenis_kelamin_l"
+                                                    name="jenis_kelamin" value="L"
+                                                    {{ old('jenis_kelamin', $v->eksternal->jenis_kelamin) == 'L' ? 'checked' : '' }}
+                                                    required>
                                                 <label class="form-check-label" for="jenis_kelamin_l">Laki-laki</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" id="jenis_kelamin_p" name="jenis_kelamin" value="P" 
-                                                    {{ old('jenis_kelamin', $v->eksternal->jenis_kelamin) == 'P' ? 'checked' : '' }} required>
+                                                <input class="form-check-input" type="radio" id="jenis_kelamin_p"
+                                                    name="jenis_kelamin" value="P"
+                                                    {{ old('jenis_kelamin', $v->eksternal->jenis_kelamin) == 'P' ? 'checked' : '' }}
+                                                    required>
                                                 <label class="form-check-label" for="jenis_kelamin_p">Perempuan</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                        
+
                                 <!-- Kolom Kanan -->
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -461,11 +580,13 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $v->eksternal->email) }}" required>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            value="{{ old('email', $v->eksternal->email) }}" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="no_telp" class="form-label">No. Telepon</label>
-                                        <input type="text" class="form-control" id="no_telp" name="no_telp" value="{{ old('no_telp', $v->eksternal->no_telp) }}" required>
+                                        <input type="text" class="form-control" id="no_telp" name="no_telp"
+                                            value="{{ old('no_telp', $v->eksternal->no_telp) }}" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label">Password (opsional)</label>
@@ -474,12 +595,51 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="sertif-eksternal-{{ $v->id }}" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Sertif</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>no</th>
+                                    <th>sertifikasi</th>
+                                    <th>masa berlaku</th>
+                                    <th>lihat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($v->sertif as $key => $value)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $value->sertifikasi }}</td>
+                                        <td>{{ $value->masa_berlaku }}</td>
+                                        <td><a href="{{ route('pelaksanaan-peserta.sertif', $value->id) }}"
+                                                class="btn btn-sm btn-primary">lihat</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
