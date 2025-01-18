@@ -14,9 +14,14 @@ use Illuminate\Support\Facades\Log;
     {
         public function index()
         {
-            $peserta['internal'] = User::with('internal')->where('user_role', 'peserta')->where('user_type', 'internal')->get();
-            $peserta['eksternal'] = User::with('eksternal')->where('user_role', 'peserta')->where('user_type', 'eksternal')->get();
-            return view('peserta.index', ['data' => $peserta]);
+            $page = request()->get('page', 1); // Default ke 1 jika tidak ada `page`
+
+            $peserta['internal'] = User::with(['internal', 'sertif'])->where('user_role', 'peserta')->where('user_type', 'internal')->orderBy('email', 'desc') // Optional
+                ->paginate(10);
+            $peserta['eksternal'] = User::with(['eksternal', 'sertif'])->where('user_role', 'peserta')->where('user_type', 'eksternal')->orderBy('email', 'desc') // Optional
+                ->paginate(10);
+            //dd($peserta['eksternal'][0]->eksternal);
+            return view('peserta.index', ['data' => $peserta,'page' => $page]);
         }
         public function tambah($i, Request $request)
         {
