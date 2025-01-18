@@ -28,7 +28,7 @@
                         <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
                     </div>
                     <div>
-                        <h5 class="card-title mb-0">Peserta Eksternal</h5>
+                        <h5 class="card-title mb-0">Perserta Eksternal</h5>
                         <p class="card-text fs-3 fw-bold">{{ $eksternal }}</p>
                     </div>
                 </div>

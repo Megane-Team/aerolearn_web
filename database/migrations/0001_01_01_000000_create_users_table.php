@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_karyawan')->nullable()->constrained('karyawan')->onDelete('cascade');
             $table->foreignId('id_eksternal')->nullable()->constrained('eksternal')->onDelete('cascade');
+            $table->string('nama')->nullable();
             $table->string('email', 100)->unique();
             $table->string('password', 255);
             $table->enum('user_role', ['peserta', 'instruktur', 'admin', 'kepala pelatihan'])->default('peserta');

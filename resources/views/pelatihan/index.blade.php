@@ -29,9 +29,7 @@
                                         <th>Deskripsi</th>
                                         <th>Koordinator</th>
                                         <th>Kategori</th>
-                                        @if (Auth::user()->user_role == 'admin')
-                                            <th>#</th>
-                                        @endif
+                                        <th>#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,18 +40,18 @@
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->koordinator }}</td>
                                             <td>{{ $v->kategori }}</td>
-                                            @if (Auth::user()->user_role == 'admin')
-                                                <td>
+                                            <td>
+                                                @if (Auth::user()->user_role == 'admin')
                                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                         data-bs-target="#edit-{{ $v->id }}">Edit</button>
                                                     <a href="{{ route('pelatihan.hapus', $v->id) }}"
                                                         class="btn btn-danger btn-sm">Hapus</a>
-                                                    <a href="{{ route('materi.index', $v->id) }}"
-                                                        class="btn btn-info btn-sm">Materi</a>
                                                     <a href="{{ route('exam.index', $v->id) }}"
                                                         class="btn btn-primary btn-sm">Exam</a>
-                                                </td>
-                                            @endif
+                                                @endif
+                                                <a href="{{ route('materi.index', $v->id) }}"
+                                                    class="btn btn-info btn-sm">Materi</a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

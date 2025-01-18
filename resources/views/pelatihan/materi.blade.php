@@ -1,6 +1,6 @@
 @extends('layouts.lay')
 @section('title')
-    Data Materi 
+    Data Materi
 @endsection
 
 @section('content')
@@ -26,7 +26,9 @@
                                         <th>Judul</th>
                                         <th>Konten</th>
                                         <th>Materi</th>
-                                        <th>#</th>
+                                        @if (Auth::user()->user_role == 'admin')
+                                            <th>#</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -35,13 +37,16 @@
                                             <td>{{ $k + 1 }}</td>
                                             <td>{{ $v->judul }}</td>
                                             <td>{{ $v->konten }}</td>
-                                            <td><a href="{{ asset($v->link) }}" target="_blank" class="btn btn-sm btn-primary">lihat</a></td>
-                                            <td>
-                                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#edit-{{ $v->id }}">Edit</button>
-                                                <a href="{{ route('materi.hapus', $v->id) }}"
-                                                    class="btn btn-danger btn-sm">Hapus</a>
-                                            </td>
+                                            <td><a href="{{ asset($v->link) }}" target="_blank"
+                                                    class="btn btn-sm btn-primary">lihat</a></td>
+                                            @if (Auth::user()->user_role == 'admin')
+                                                <td>
+                                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#edit-{{ $v->id }}">Edit</button>
+                                                    <a href="{{ route('materi.hapus', $v->id) }}"
+                                                        class="btn btn-danger btn-sm">Hapus</a>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -97,12 +102,13 @@
                         <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('materi.update',$v->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('materi.update', $v->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="" class="form-label">Judul</label>
-                                <input type="text" class="form-control" id="" name="judul" required value="{{ $v->judul }}">
+                                <input type="text" class="form-control" id="" name="judul" required
+                                    value="{{ $v->judul }}">
                             </div>
                             <div class="mb-3">
                                 <label for="" class="form-label">Konten</label>

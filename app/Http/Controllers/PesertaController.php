@@ -12,10 +12,14 @@ class PesertaController extends Controller
 {
     public function index()
     {
-        $peserta['internal'] = User::with('internal')->where('user_role', 'peserta')->where('user_type', 'internal')->get();
-        $peserta['eksternal'] = User::with('eksternal')->where('user_role', 'peserta')->where('user_type', 'eksternal')->get();
+        $page = request()->get('page', 1); // Default ke 1 jika tidak ada `page`
+
+        $peserta['internal'] = User::with(['internal', 'sertif'])->where('user_role', 'peserta')->where('user_type', 'internal')->orderBy('email', 'desc') // Optional
+            ->paginate(10);
+        $peserta['eksternal'] = User::with(['eksternal', 'sertif'])->where('user_role', 'peserta')->where('user_type', 'eksternal')->orderBy('email', 'desc') // Optional
+            ->paginate(10);
         //dd($peserta['eksternal'][0]->eksternal);
-        return view('peserta.index', ['data' => $peserta]);
+        return view('peserta.index', ['data' => $peserta,'page' => $page]);
     }
     public function tambah($i, Request $request)
     {
@@ -54,6 +58,7 @@ class PesertaController extends Controller
             User::create([
                 'id_karyawan' => $karyawan->id,
                 'email' => $karyawan->email,
+                'nama' => $karyawan->nama,
                 'password' => Hash::make($request->password),
                 'user_type' => 'internal',
                 'user_role' => 'peserta'

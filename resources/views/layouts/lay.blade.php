@@ -135,7 +135,15 @@
                         <span>Peserta</span>
                     </a>
                 </li><!-- End Dashboard Nav -->
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::routeIs('user.index') ? '' : 'collapsed' }}"
+                        href="{{ route('user.index') }}">
+                        <i class="bi bi-people"></i>
+                        <span>User</span>
+                    </a>
+                </li><!-- End Dashboard Nav -->
             @endif
+
 
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'instruktur')
                 <li class="nav-item">
@@ -154,6 +162,22 @@
                     <span>Pelaksanaan</span>
                 </a>
             </li>
+            @if (Auth::user()->user_role == 'admin')
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::routeIs('alat.index') ? '' : 'collapsed' }}"
+                        href="{{ route('alat.index') }}">
+                        <i class="bi bi-gear"></i>
+                        <span>Data Alat</span>
+                    </a>
+                </li><!-- End Dashboard Nav -->
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::routeIs('ruangan.index') ? '' : 'collapsed' }}"
+                        href="{{ route('ruangan.index') }}">
+                        <i class="bi bi-house"></i>
+                        <span>Data Ruangan</span>
+                    </a>
+                </li><!-- End Dashboard Nav -->
+            @endif
 
 
 
@@ -227,8 +251,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
     <script>
-        let table = new DataTable('.table');
+        let table = new DataTable('.table:not(.not)');
     </script>
+    
 
     <!-- Template Main JS File -->
     <script src="{{ asset('NiceAdmin') }}/assets/js/main.js"></script>
