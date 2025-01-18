@@ -8,6 +8,7 @@ use App\Http\Controllers\api\NilaiController;
 use App\Http\Controllers\api\NotificationController;
 use App\Http\Controllers\api\ProfileController;
 use App\Http\Controllers\api\TrainingController;
+use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -43,7 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notification/{id}', [NotificationController::class, 'getAll']);
 
     Route::get('/materi/{id}', [MateriController::class, 'getAll']);
-
     Route::post('/feedback/{id}',[ExamController::class,'feedback']);
 
     Route::get('/sertif', [ProfileController::class, 'getSertif']);

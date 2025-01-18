@@ -205,13 +205,6 @@ class PelaksanaanPelatihanController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            Notifications::create([
-                'id_peserta' => $id_peserta,
-                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
-                'title' => 'Pelatihan diadakan',
-                'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
-                'tanggal' => now(),
-            ]);
         }
 
         // Hapus peserta yang tidak lagi dicentang
