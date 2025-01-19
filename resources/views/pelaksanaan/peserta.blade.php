@@ -73,7 +73,7 @@
                                                             @endif
                                                         @endif
                                                     @else
-                                                        Balum Absen
+                                                        Belum Absen
                                                     @endif
                                                 </td>
                                             @endforeach
@@ -82,7 +82,7 @@
                                                     <a href="{{ route('pelaksanaan-peserta.sertif', $sertif[$k]->id) }}"
                                                         class="btn btn-primary btn-sm">Lihat Sertif</a>
                                                 @else
-                                                    Sertifikat belum di generate
+                                                belum terdapat sertifikat
                                                 @endif
                                             </td>
                                             <td>
@@ -94,7 +94,8 @@
                                             </td>
                                             <td>
                                                 @if ($feedback[$k])
-                                                    {{ $feedback[$k]->feedbackquestion->text }}
+                                                    <a href="{{ route('pelaksanaan.feedbackUser', [$v->id_peserta, $v->id_pelaksanaan_pelatihan]) }}"
+                                                    class="btn btn-primary btn-sm">Lihat Feedback</a>
                                                 @else
                                                     belum terdapat feedback
                                                 @endif

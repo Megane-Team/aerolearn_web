@@ -131,7 +131,8 @@ use Illuminate\Support\Facades\Log;
                         null,
                         'eksternal',
                         'peserta',
-                        $token
+                        $token,
+                        $nama
                     );
 
                     return true;
@@ -196,7 +197,8 @@ use Illuminate\Support\Facades\Log;
                         $karyawan->id,
                         'internal',
                         'peserta',
-                        $token
+                        $token,
+                        $nama
                     );
 
                     return true;
@@ -209,7 +211,7 @@ use Illuminate\Support\Facades\Log;
         }
         
 
-        private function postUser($email, $password, $id_eksternal, $id_karyawan, $userType, $userRole, $token) { 
+        private function postUser($email, $password, $id_eksternal, $id_karyawan, $userType, $userRole, $token, $nama) { 
         try { 
             Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
@@ -230,6 +232,7 @@ use Illuminate\Support\Facades\Log;
             Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 User::create([
+                    'nama' => $nama,
                     'id_eksternal' => $id_eksternal,
                     'id_karyawan' => $id_karyawan,
                     'email' => $email,
