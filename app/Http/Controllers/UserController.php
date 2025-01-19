@@ -22,18 +22,24 @@ class UserController extends Controller
             'user_role' => 'required',
         ]);
 
-        $this->postUser(
+        $response = $this->postUser(
             $request,
-            // $request->nama,
-            // $request->email,
-            // $request->password,
-            // null,
-            // null,
-            // 'internal',
-            // $request->user_role,
         );
-        
+
+        if($response){
+        User::create([
+            'nama' => $validated['nama'],
+            'id_eksternal' => null,
+            'id_karyawan' => null,
+            'email' => $validated['email'],
+            'password' => Hash::make($request->password),
+            'user_type' => 'internal',
+            'user_role' => $validated['user_role'],
+        ]);
         return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
+        }else{
+            return redirect()->route('user.index')->with('error', 'Data peserta gagal disimpan.');
+        }
     }
 
     private function postUser(Request $request) { 
@@ -57,16 +63,7 @@ class UserController extends Controller
                     
             Log::info('Response: ' . $response->body());
             if ($response->successful()) {
-                Log::info($request->nama);
-                User::create([
-                    'nama' => $request->nama ? $request->nama : null,
-                    'id_eksternal' => null,
-                    'id_karyawan' => null,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'user_type' => 'internal',
-                    'user_role' => $request->userRole,
-                ]);
+                
                 Log::info($request->nama);
                 return true;
             } else {

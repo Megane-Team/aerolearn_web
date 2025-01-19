@@ -688,4 +688,16 @@ class PelaksanaanPelatihanController extends Controller
             return false;
         } 
     }
+
+    public function feedbackUser($id_user, $id_pelaksanaanPelatihan)
+{
+    $feedback = Feedback::where('id_user', $id_user)
+                        ->where('id_pelaksanaanPelatihan', $id_pelaksanaanPelatihan)
+                        ->get();
+    
+    return view('pelaksanaan.feedback', [
+        'feedback' => $feedback
+    ]);
+}
+
 }

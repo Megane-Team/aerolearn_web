@@ -81,6 +81,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/feedback-update/{id}', [FeedbackController::class, 'update'])->name('feedback.update');
     Route::get('/feedback-hapus/{id}', [FeedbackController::class, 'hapus'])->name('feedback.hapus');
 
+
+    Route::get('/feedback/{id_user}/{id_pelaksanaan_pelatihan}', [PelaksanaanPelatihanController::class, 'feedbackUser'])->name('pelaksanaan.feedbackUser');
+
     Route::get('import', function () {
         return view('import');
     })->name('import');
