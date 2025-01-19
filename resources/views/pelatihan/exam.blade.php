@@ -12,9 +12,9 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title">exam Pelatihan {{ $data->nama }}</h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambah">
+                            <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambah">
                                 Tambah Data
-                            </button>
+                            </button> -->
                         </div>
 
 
@@ -33,10 +33,10 @@
                                             <td>{{ $k + 1 }}</td>
                                             <td>{{ $v->judul }}</td>
                                             <td>
-                                                <a href="{{ route('exam.hapus', $v->id) }}"
+                                                <!-- <a href="{{ route('exam.hapus', $v->id) }}"
                                                     class="btn btn-danger btn-sm">Hapus</a>
                                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#edit-{{ $v->id }}">Edit</button>
+                                                    data-bs-target="#edit-{{ $v->id }}">Edit</button> -->
                                                 <a href="{{ route('question.index', $v->id) }}"
                                                     class="btn btn-primary btn-sm">Pertanyaan</a>
                                             </td>

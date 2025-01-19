@@ -19,7 +19,8 @@ use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PelaksanaanPelatihanController extends Controller
 {
@@ -47,36 +48,132 @@ class PelaksanaanPelatihanController extends Controller
             'is_selesai' => 'required',
         ]);
 
-        $data = PelaksanaanPelatihan::create([
-            'id_pelatihan' => $request->id_pelatihan,
-            'id_instruktur' => $request->id_instruktur,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-            'jenis_training' => $request->jenis_training,
-            'id_ruangan' => $request->id_ruangan,
-            'is_selesai' => $request->is_selesai,
-        ]);
-        Ruangan::where('id', $request->id_ruangan)->update([
-            'status_ruangan' => 'dipakai'
-        ]);
-        PermintaanTraining::create([
-            'id_pelaksanaanPelatihan' => $data->id,
-            'status' => 'menunggu'
-        ]);
-        $head = User::where('user_role', 'kepala pelatihan')->first();
-        Notifications::create([
-            'id_peserta' => $head->id,
-            'id_pelaksanaan_pelatihan' => $data->id,
-            'title' => 'Memerlukan konfirmasi',
-            'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
-            'tanggal' => now(),
-        ]);
+        $this->postDataRancangan($request);
+        // $data = PelaksanaanPelatihan::create([
+        //     'id_pelatihan' => $request->id_pelatihan,
+        //     'id_instruktur' => $request->id_instruktur,
+        //     'tanggal_mulai' => $request->tanggal_mulai,
+        //     'tanggal_selesai' => $request->tanggal_selesai,
+        //     'jam_mulai' => $request->jam_mulai,
+        //     'jam_selesai' => $request->jam_selesai,
+        //     'jenis_training' => $request->jenis_training,
+        //     'id_ruangan' => $request->id_ruangan,
+        //     'is_selesai' => $request->is_selesai,
+        // ]);
+        // Ruangan::where('id', $request->id_ruangan)->update([
+        //     'status_ruangan' => 'dipakai'
+        // ]);
+        // PermintaanTraining::create([
+        //     'id_pelaksanaanPelatihan' => $data->id,
+        //     'status' => 'menunggu'
+        // ]);
+
+        // $head = User::where('user_role', 'kepala pelatihan')->first();
+        // Notifications::create([
+        //     'id_peserta' => $head->id,
+        //     'id_pelaksanaan_pelatihan' => $data->id,
+        //     'title' => 'Memerlukan konfirmasi',
+        //     'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
+        //     'tanggal' => now(),
+        // ]);
 
         // Redirect kembali dengan pesan sukses
         return back()->with('success', 'Data berhasil disimpan.');
     }
+
+    private function postDataRancangan(Request $request) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $request);
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->post($url . '/rancangan/+', [ 
+                'id_pelatihan' => (int)$request->id_pelatihan,
+                'id_instruktur' => (int)$request->id_instruktur,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'jam_mulai' => $request->jam_mulai,
+                'jam_selesai' => $request->jam_selesai,
+                'jenis_training' => $request->jenis_training,
+                'id_ruangan' => (int)$request->id_ruangan,
+                'is_selesai' => $request->is_selesai,
+            ]); 
+    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                Log::info('success');
+                $data = PelaksanaanPelatihan::create([
+                    'id_pelatihan' => $request->id_pelatihan,
+                    'id_instruktur' => $request->id_instruktur,
+                    'tanggal_mulai' => $request->tanggal_mulai,
+                    'tanggal_selesai' => $request->tanggal_selesai,
+                    'jam_mulai' => $request->jam_mulai,
+                    'jam_selesai' => $request->jam_selesai,
+                    'jenis_training' => $request->jenis_training,
+                    'id_ruangan' => $request->id_ruangan,
+                    'is_selesai' => $request->is_selesai,
+                ]);
+                Ruangan::where('id', $request->id_ruangan)->update([
+                    'status_ruangan' => 'dipakai'
+                ]);
+                PermintaanTraining::create([
+                    'id_pelaksanaanPelatihan' => $data->id,
+                    'status' => 'menunggu'
+                ]);
+                $head = User::where('user_role', 'kepala pelatihan')->first();
+
+                // $this->postNotification($head, $data);
+
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
+    // private function postNotification($head, $data) { 
+    //     try { 
+    //         Log::info('halo');
+    //         $url = config('app.api_base_url');
+    //         $token = session('api_token');
+    //         Log::info('Token from session: ' . $token);
+    
+    //         $response = Http::withHeaders([
+    //             'Authorization' => 'Bearer ' . $token,
+    //             'Content-Type' => 'application/json'
+    //         ])->post($url . '/notification/+', [ 
+    //             'id_user' => $head->id,
+    //             'id_pelaksanaan_pelatihan' => $data->id,
+    //             'title' => 'Memerlukan konfirmasi',
+    //             'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
+    //             'tanggal' => now(),
+    //         ]); 
+    
+    //         Log::info('Response: ' . $response->body());
+    //         if ($response->successful()) { 
+    //             Log::info('success');
+    //             Notifications::create([
+    //                 'id_peserta' => $head->id,
+    //                 'id_pelaksanaan_pelatihan' => $data->id,
+    //                 'title' => 'Memerlukan konfirmasi',
+    //                 'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
+    //                 'tanggal' => now(),
+    //             ]);
+    //             return true;
+    //         } else {
+    //             return false;
+    //         }
+    //     } catch (\Exception $e) { 
+    //         return false;
+    //     } 
+    // }
 
     public function update($id, Request $request)
     {
@@ -93,43 +190,132 @@ class PelaksanaanPelatihanController extends Controller
             'is_selesai' => 'required',
         ]);
 
+
+        $this->updateDataRancangan($id, $request);
         // Ambil data pelaksanaan pelatihan berdasarkan ID
-        $pelaksanaanPelatihan = PelaksanaanPelatihan::findOrFail($id);
+        // $pelaksanaanPelatihan = PelaksanaanPelatihan::findOrFail($id);
 
-        // Update data di database
-        $pelaksanaanPelatihan->update([
-            'id_pelatihan' => $request->id_pelatihan,
-            'id_instruktur' => $request->id_instruktur,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-            'jenis_training' => $request->jenis_training,
-            'id_ruangan' => $request->id_ruangan,
-            'is_selesai' => $request->is_selesai,
-        ]);
+        // // Update data di database
+        // $pelaksanaanPelatihan->update([
+        //     'id_pelatihan' => $request->id_pelatihan,
+        //     'id_instruktur' => $request->id_instruktur,
+        //     'tanggal_mulai' => $request->tanggal_mulai,
+        //     'tanggal_selesai' => $request->tanggal_selesai,
+        //     'jam_mulai' => $request->jam_mulai,
+        //     'jam_selesai' => $request->jam_selesai,
+        //     'jenis_training' => $request->jenis_training,
+        //     'id_ruangan' => $request->id_ruangan,
+        //     'is_selesai' => $request->is_selesai,
+        // ]);
 
-        // Update status ruangan (jika ruangan diubah)
-        if ($pelaksanaanPelatihan->wasChanged('id_ruangan')) {
-            // Ubah status ruangan lama menjadi "kosong"
-            Ruangan::where('id', $pelaksanaanPelatihan->getOriginal('id_ruangan'))->update([
-                'status_ruangan' => 'tidak dipakai'
-            ]);
+        // // Update status ruangan (jika ruangan diubah)
+        // if ($pelaksanaanPelatihan->wasChanged('id_ruangan')) {
+        //     // Ubah status ruangan lama menjadi "kosong"
+        //     Ruangan::where('id', $pelaksanaanPelatihan->getOriginal('id_ruangan'))->update([
+        //         'status_ruangan' => 'tidak dipakai'
+        //     ]);
 
-            // Ubah status ruangan baru menjadi "dipakai"
-            Ruangan::where('id', $request->id_ruangan)->update([
-                'status_ruangan' => 'dipakai'
-            ]);
-        }
+        //     // Ubah status ruangan baru menjadi "dipakai"
+        //     Ruangan::where('id', $request->id_ruangan)->update([
+        //         'status_ruangan' => 'dipakai'
+        //     ]);
+        // }
 
         // Redirect kembali dengan pesan sukses
         return back()->with('success', 'Data berhasil diperbarui.');
     }
+
+    private function updateDataRancangan($id, Request $request) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $request);
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->put($url . '/rancangan/update/' .$id, [ 
+                'id_pelatihan' => (int)$request->id_pelatihan,
+                'id_instruktur' => (int)$request->id_instruktur,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'jam_mulai' => $request->jam_mulai,
+                'jam_selesai' => $request->jam_selesai,
+                'jenis_training' => $request->jenis_training,
+                'id_ruangan' => (int)$request->id_ruangan,
+                'is_selesai' => $request->is_selesai,
+            ]); 
+    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                $pelaksanaanPelatihan = PelaksanaanPelatihan::findOrFail($id);
+
+                if($request->id_ruangan){
+                    Ruangan::where('id', $pelaksanaanPelatihan->id_ruangan)->update([
+                        'status_ruangan' => 'tidak dipakai'
+                    ]);
+
+                    Ruangan::where('id', $request->id_ruangan)->update([
+                        'status_ruangan' => 'dipakai'
+                    ]);
+                }
+                // Update data di database
+                $pelaksanaanPelatihan->update([
+                    'id_pelatihan' => $request->id_pelatihan,
+                    'id_instruktur' => $request->id_instruktur,
+                    'tanggal_mulai' => $request->tanggal_mulai,
+                    'tanggal_selesai' => $request->tanggal_selesai,
+                    'jam_mulai' => $request->jam_mulai,
+                    'jam_selesai' => $request->jam_selesai,
+                    'jenis_training' => $request->jenis_training,
+                    'id_ruangan' => $request->id_ruangan,
+                    'is_selesai' => $request->is_selesai,
+                ]);
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
+
+    
     public function hapus($id)
     {
-        $data = PelaksanaanPelatihan::findOrFail($id);
-        $data->delete();
+        // $data = PelaksanaanPelatihan::findOrFail($id);
+        // $data->delete();
+        $this->deleteDataRancangan($id);
         return back()->with('success', 'Data berhasil dihapus.');
+    }
+
+    private function deleteDataRancangan($id) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $token);
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->delete($url . '/rancangan/delete/' . $id,);
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                $data = PelaksanaanPelatihan::findOrFail($id);
+                Ruangan::where('id', $data->id_ruangan)->update([
+                    'status_ruangan' => 'tidak dipakai'
+                ]);
+                $data->delete();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
     }
     public function peserta($id)
     {
@@ -198,31 +384,85 @@ class PelaksanaanPelatihanController extends Controller
 
         // Tambahkan peserta baru ke table_peserta
         foreach ($peserta_tambah as $id_peserta) {
-            PesertaPelatihan::create([
-                'id_peserta' => $id_peserta,
-                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            Notifications::create([
-                'id_peserta' => $id_peserta,
-                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
-                'title' => 'Pelatihan diadakan',
-                'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
-                'tanggal' => now(),
-            ]);
+            $this->postPeserta($id_pelaksanaan_pelatihan, $id_peserta);
+            // PesertaPelatihan::create([
+            //     'id_peserta' => $id_peserta,
+            //     'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
         }
 
         // Hapus peserta yang tidak lagi dicentang
-        PesertaPelatihan::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
-            ->whereIn('id_peserta', $peserta_hapus)
-            ->delete();
+        foreach ($peserta_hapus as $id_peserta) {
+            // PesertaPelatihan::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
+            //     ->where('id_peserta', $id_peserta)
+            //     ->delete();
+            $this->deletePeserta($id_pelaksanaan_pelatihan, $id_peserta);
+        }
+        
 
         
 
         // Redirect atau respon sesuai kebutuhan
         return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
     }
+
+    private function postPeserta($id_pelaksanaan_pelatihan, $id_peserta) { 
+        try { 
+            $token = session('api_token');
+            Log::info('Token in postUser: ' . $token);
+            $url = config('app.api_base_url');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->post($url . '/peserta/+', [ 
+                'id_pelaksanaan_pelatihan' => (int)$id_pelaksanaan_pelatihan,
+                'id_peserta' => (int)$id_peserta,
+            ]); 
+                    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) {
+                PesertaPelatihan::create([
+                'id_peserta' => $id_peserta,
+                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
+    private function deletePeserta($id_pelaksanaan_pelatihan, $id_peserta) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $token);
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->delete($url . '/peserta/delete/' . $id_peserta . '/' .$id_pelaksanaan_pelatihan,);
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+            PesertaPelatihan::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
+                ->where('id_peserta', $id_peserta)
+                ->delete();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
     public function peserta_generatesertif($id)
     {
         $data = PelaksanaanPelatihan::findOrFail($id);
@@ -243,28 +483,31 @@ class PelaksanaanPelatihanController extends Controller
         }
         return back()->with('success', 'Data berhasil disimpan.');
     }
-    public function peserta_sertif($id)
-    {
-        $d = Sertifikat::find($id);
-        $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . route('pelaksanaan-peserta.sertif', $id);
-        $qrCodeBase64 = base64_encode(file_get_contents($qr));
-        //dd($qrCodeBase64);
-        $data = [
-            'name' => $d->peserta->info->nama, // Bisa diambil dari request
-            'judul' => $d->pelaksanaan->pelatihan->nama,
-            'masa_berlaku' => $d->masa_berlaku,
-            'qrcode' => $qrCodeBase64
-        ];
+    public function peserta_sertif($id) { 
+        $url = config('app.api_base_url'); 
+        $token = session('api_token'); 
+        $response = Http::withHeaders([ 
+            'Content-Type' => 'application/json',  
+            ])->get($url . '/file/e-sertifikat/'.$id); 
+            
+            Log::info('Response: ' . $response->body()); 
+            if ($response->successful()) { 
+                return redirect($url . '/file/e-sertifikat/'.$id); 
+            } else { 
+                return response()->json([ 
+                    'statusCode' => $response->status(), 
+                    'message' => 'Error retrieving the certificate'
+                 ], $response->status()
+                ); 
+            } 
+        }
 
-
-        $pdf = PDF::loadView('sertif', $data)->setPaper([0, 0, 1654, 2339]);
-        return $pdf->download($d->pelaksanaan->pelatihan->nama . '_' . $d->peserta->info->nama . '.pdf');
-    }
     public function validasi($id)
     {
-        Absensi::where('id', $id)->update([
-            'status_absen' => 'Validasi'
-        ]);
+        // Absensi::where('id', $id)->update([
+        //     'status_absen' => 'Validasi'
+        // ]);
+        $this->updateValidasi($id);
         return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
     }
     public function alat($id)
@@ -284,53 +527,165 @@ class PelaksanaanPelatihanController extends Controller
             'alat' => $alat
         ]);
     }
+
+    private function updateValidasi($id) { 
+        try { 
+            $token = session('api_token');
+            Log::info('Token in postUser: ' . $token);
+            $url = config('app.api_base_url');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->put($url . '/absensi/validasi/' . $id); 
+                    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) {
+                Absensi::where('id', $id)->update([
+                    'status_absen' => 'Validasi'
+            ]);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
     public function alat_tambah(Request $request)
     {
-        TableAlat::where('id_pelaksanaan_pelatihan', $request->id_pelaksanaan_pelatihan)->delete();
+        $this->deleteTabelAlat($request->id_pelaksanaan_pelatihan);
+        // TableAlat::where('id_pelaksanaan_pelatihan', $request->id_pelaksanaan_pelatihan)->delete();
         foreach ($request->id_alat as $key => $value) {
-            TableAlat::create([
-                'id_alat' => $value,
-                'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan
-            ]);
+            // TableAlat::create([
+            //     'id_alat' => $value,
+            //     'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan
+            // ]);
+            $this->postAlat($request->id_pelaksanaan_pelatihan, $value);
         }
         return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
     }
+
+    private function postAlat($id_pelaksanaan_pelatihan, $id_alat) { 
+        try { 
+            $token = session('api_token');
+            Log::info('Token in postUser: ' . $token);
+            $url = config('app.api_base_url');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->post($url . '/alat/tabel/+', [ 
+                'id_pelaksanaan_pelatihan' => (int)$id_pelaksanaan_pelatihan,
+                'id_alat' => (int)$id_alat,
+            ]); 
+                    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) {
+               TableAlat::create([
+                'id_alat' => $id_alat,
+                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan
+            ]);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
+    private function deleteTabelAlat($id_pelaksanaan_pelatihan) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $token);
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->delete($url . '/alat/delete/tabel/' . $id_pelaksanaan_pelatihan,);
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                TableAlat::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)->delete();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
+
     public function status($id, $t)
     {
-        $data = PermintaanTraining::find($id);
-        $data->status = $t == 1 ? 'terima' : 'tolak';
-        if($t == 1){
-            $data->status = 'instruktur menunggu';
-        }else if($t  == 2){
-            $data->status = 'tolak';
-        }else if($t == 3){
-            $data->status = 'terima';
-        }else if($t == 4){
-            $data->status = 'instruktur menolak';
-        }
+        $status = $t == 1 ? 'terima' : 'tolak';
+        $this->updateDataUser($id, $status);
+        // $data = PermintaanTraining::find($id);
+        // $data->status = $status;
+        // $data->save();
+        // if ($t == 1) {
+        //     $instruktur = User::where('user_role', 'instruktur')->first();
+        //     $pelaksanaanPelatihan = PelaksanaanPelatihan::find($data->id_pelaksanaanPelatihan);
+        //     $peserta = PesertaPelatihan::where('id_pelaksanaan_pelatihan',$data->id_pelaksanaanPelatihan);
+        // }
+        // if($t == 1){
+        //     $data->status = 'instruktur menunggu';
+        // }else if($t  == 2){
+        //     $data->status = 'tolak';
+        // }else if($t == 3){
+        //     $data->status = 'terima';
+        // }else if($t == 4){
+        //     $data->status = 'instruktur menolak';
+        // }
 
-        $data->save();
-        if ($t == 1) {
-            $instruktur = User::where('user_role', 'instruktur')->first();
-            $pelaksanaanPelatihan = PelaksanaanPelatihan::find($data->id_pelaksanaanPelatihan);
-            $peserta = PesertaPelatihan::where('id_pelaksanaan_pelatihan',$data->id_pelaksanaanPelatihan);
-            Notifications::create([
-                'id_peserta' => $instruktur->id,
-                'id_pelaksanaan_pelatihan' => $pelaksanaanPelatihan->id,
-                'title' => 'Pelatihan diadakan',
-                'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
-                'tanggal' => now(),
-            ]);
-            foreach ($peserta as $key => $value) {
-                Notifications::create([
-                    'id_peserta' => $value->id_peserta,
-                    'id_pelaksanaan_pelatihan' => $pelaksanaanPelatihan->id,
-                    'title' => 'Pelatihan diadakan',
-                    'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
-                    'tanggal' => now(),
-                ]);
-            }
-        }
+        // Notifications::create([
+        //     'id_peserta' => $instruktur->id,
+        //     'id_pelaksanaan_pelatihan' => $pelaksanaanPelatihan->id,
+        //     'title' => 'Pelatihan diadakan',
+        //     'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
+        //     'tanggal' => now(),
+        // ]);
+        // foreach ($peserta as $key => $value) {
+        //     Notifications::create([
+        //         'id_peserta' => $value->id_peserta,
+        //         'id_pelaksanaan_pelatihan' => $pelaksanaanPelatihan->id,
+        //         'title' => 'Pelatihan diadakan',
+        //         'detail' => 'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai,
+        //         'tanggal' => now(),
+        //     ]);
+        // }
+        
+        
         return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+    }
+
+    private function updateDataUser($id, $status) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $token);
+            
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->put($url . '/draft/update/'.$id, [ 
+                'status' => $status
+            ]); 
+    
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                $data = PermintaanTraining::find($id);
+                $data->status = $status;
+                $data->save();
+
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
     }
 }

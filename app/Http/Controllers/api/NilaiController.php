@@ -14,24 +14,12 @@ class NilaiController extends Controller
     {
         Nilai::create([
             'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
-            'id_peserta' => $request->id_peserta ?? Auth::user()->id,
+            'id_peserta' => $request->id_peserta,
             'score' => $request->score
         ]);
         return response()->json([
             'statusCode' => 200,
             'message' => 'Success',
-        ], 200);
-    }
-    public function getNilai(Request $request): JsonResponse
-    {
-        $data = Nilai::where(
-            'id_pelaksanaan_pelatihan',
-            $request->id_pelaksanaan_pelatihan
-        )->where('id_peserta', $request->id_peserta)->first();
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'data' => $data
         ], 200);
     }
 }

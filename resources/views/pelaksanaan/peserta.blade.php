@@ -18,8 +18,8 @@
                                         data-bs-target="#tambah">
                                         Edit Data
                                     </button>
-                                    <a href="{{ route('pelaksanaan-peserta.generatesertif', $data->id) }}"
-                                        class="btn btn-success btn-sm">generate all sertif</a>
+                                    <!-- <a href="{{ route('pelaksanaan-peserta.generatesertif', $data->id) }}"
+                                        class="btn btn-success btn-sm">generate all sertif</a> -->
                                 </div>
                             @endif
                         </div>
