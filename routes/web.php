@@ -9,6 +9,7 @@ use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FeedbackController;
 use App\Models\Karyawan;
 use App\Models\PelaksanaanPelatihan;
 use App\Models\Pelatihan;
@@ -75,6 +76,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pelaksanaan-alat/{id}', [PelaksanaanPelatihanController::class, 'alat'])->name('pelaksanaan-alat.index');
     Route::post('pelaksanaan-alat-tambah', [PelaksanaanPelatihanController::class, 'alat_tambah'])->name('pelaksanaan-alat.tambah');
 
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback-tambah', [FeedbackController::class, 'tambah'])->name('feedback.tambah');
+    Route::post('/feedback-update/{id}', [FeedbackController::class, 'update'])->name('feedback.update');
+    Route::get('/feedback-hapus/{id}', [FeedbackController::class, 'hapus'])->name('feedback.hapus');
 
     Route::get('import', function () {
         return view('import');

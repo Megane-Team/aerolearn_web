@@ -23,19 +23,20 @@ class UserController extends Controller
         ]);
 
         $this->postUser(
-            $request->nama,
-            $request->email,
-            $request->password,
-            null,
-            null,
-            'internal',
-            $request->user_role,
+            $request,
+            // $request->nama,
+            // $request->email,
+            // $request->password,
+            // null,
+            // null,
+            // 'internal',
+            // $request->user_role,
         );
         
         return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
     }
 
-    private function postUser($nama, $email, $password, $id_eksternal, $id_karyawan, $userType, $userRole) { 
+    private function postUser(Request $request) { 
         try { 
             $token = session('api_token');
             Log::info('Token in postUser: ' . $token);
@@ -45,25 +46,28 @@ class UserController extends Controller
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
             ])->post($url . '/user/registrasi', [ 
-                'nama' => $nama, 
-                'id_eksternal' => $id_eksternal, 
-                'id_karyawan' => $id_karyawan,
-                'user_type' => $userType, 
-                'user_role' => $userRole, 
-                'email' => $email, 
-                'password' => $password, 
+                'nama' => $request->nama, 
+                'id_eksternal' => null, 
+                'id_karyawan' => null,
+                'user_type' => "internal", 
+                'user_role' => $request->user_role, 
+                'email' => $request->email, 
+                'password' => $request->password, 
             ]); 
                     
             Log::info('Response: ' . $response->body());
             if ($response->successful()) {
+                Log::info($request->nama);
                 User::create([
-                    'email' => $email,
-                    'nama' => $nama,
-                    'password' => Hash::make($password),
+                    'nama' => $request->nama ? $request->nama : null,
+                    'id_eksternal' => null,
+                    'id_karyawan' => null,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
                     'user_type' => 'internal',
-                    'user_role' => $userRole,
+                    'user_role' => $request->userRole,
                 ]);
-                    
+                Log::info($request->nama);
                 return true;
             } else {
                 return false;

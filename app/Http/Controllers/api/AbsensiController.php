@@ -36,14 +36,15 @@ class AbsensiController extends Controller
         $validated = $request->validate([
             'id_materi' => 'nullable|integer',
             'id_exam' => 'nullable|integer',
+            'id_peserta'=> 'required|integer',
             'id_pelaksanaan_pelatihan' => 'required|integer',
         ]);
 
         $id_materi = $validated['id_materi'] ?? null;
         $id_exam = $validated['id_exam'] ?? null;
         $id_pelaksanaan_pelatihan = $validated['id_pelaksanaan_pelatihan'];
-        $user = Auth::user(); // Mendapatkan data user yang login
-        $id_peserta = $user ? $user->id : null;
+        $id_peserta = $validated['id_peserta'];
+
 
         // Cek apakah peserta sudah absen
         $res = Absensi::where('id_peserta', $id_peserta)
@@ -74,60 +75,6 @@ class AbsensiController extends Controller
         return response()->json([
             'statusCode' => 200,
             'message' => 'Success',
-        ], 200);
-    }
-    public function getAbsensiMateri($id, $id_pelaksanaan_pelatihan)
-    {
-        // Mendapatkan user yang sedang login
-        $user = Auth::user();
-        $idUser = $user ? $user->id : null;
-
-        // Mencari data absensi berdasarkan parameter
-        $res = Absensi::where('id_peserta', $idUser)
-            ->where('id_materi', $id)
-            ->where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
-            ->first();
-
-        // Jika data absensi tidak ditemukan
-        if (!$res) {
-            return response()->json([
-                'statusCode' => 401,
-                'message' => 'Absensi not found',
-            ], 401);
-        }
-
-        // Jika data absensi ditemukan
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'status_absen' => $res->status_absen,
-        ], 200);
-    }
-    public function getAbsensiExam($id, $id_pelaksanaan_pelatihan)
-    {
-        // Mendapatkan user yang sedang login
-        $user = Auth::user();
-        $idUser = $user ? $user->id : null;
-
-        // Mencari data absensi berdasarkan parameter
-        $res = Absensi::where('id_peserta', $idUser)
-            ->where('id_exam', $id)
-            ->where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
-            ->first();
-
-        // Jika data absensi tidak ditemukan
-        if (!$res) {
-            return response()->json([
-                'statusCode' => 401,
-                'message' => 'Absensi not found',
-            ], 401);
-        }
-
-        // Jika data absensi ditemukan
-        return response()->json([
-            'statusCode' => 200,
-            'message' => 'Success',
-            'status_absen' => $res->status_absen,
         ], 200);
     }
 }

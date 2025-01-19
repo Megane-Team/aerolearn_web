@@ -178,15 +178,19 @@ class MateriController extends Controller
                     ); }
                     $destinationPath = public_path('materi');
                     $fileName = $judul . '.pdf';
-                     $file->move($destinationPath, $fileName); 
-                     $materiFile = 'materi/' . $fileName; 
-                }
+                    $file->move($destinationPath, $fileName); 
+                    $materiFile = 'materi/' . $fileName; 
+                } else{
+                    $fileName = $data->konten;
+                    $materiFile = $data->link;
+                } 
 
                 $data->update([
                     'judul' => $judul,
                     'konten' => $fileName,
                     'link' => $materiFile,
                 ]);
+                Log::info('Data updated successfully');
                 return true;
             } else {
                 return false;

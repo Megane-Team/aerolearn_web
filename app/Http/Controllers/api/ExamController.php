@@ -10,6 +10,7 @@ use App\Models\Jawaban;
 use App\Models\JawabanBenar;
 use App\Models\OpsiJawaban;
 use App\Models\Question;
+use App\Models\Sertifikat;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +46,7 @@ class ExamController extends Controller
                 'jawaban_benar' => $jb->id,
                 'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
                 'id_opsi_jawaban' => $request->id_opsi_jawaban,
-                'id_peserta' => $request->id_peserta ?? Auth::user()->id,
+                'id_peserta' => $request->id_peserta,
                 'id_question' => $request->id_question,
                 'is_benar' => $is_benar
             ]);
@@ -54,7 +55,7 @@ class ExamController extends Controller
                 'jawaban_benar' => $jb->id,
                 'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
                 'id_opsi_jawaban' => $request->id_opsi_jawaban,
-                'id_peserta' => $request->id_peserta ?? Auth::user()->id,
+                'id_peserta' => $request->id_peserta,
                 'id_question' => $request->id_question,
                 'is_benar' => $is_benar
             ]);
@@ -66,15 +67,14 @@ class ExamController extends Controller
         ], 200);
     }
    
-    public function feedback($id, Request $request){
-        $f = FeedbackQuestion::create([
-            'text' => $request->text
-        ]);
+    public function feedback(Request $request){
         Feedback::create([
-            'id_user' => Auth::user()->id,
-            'id_feedbackQuestion' => $f->id,
-            'id_pelaksanaanPelatihan' => $id
+            'id_user' => $request->id_user,
+            'id_feedbackQuestion' => $request->id_feedbackQuestion,
+            'text' => $request->text,
+            'id_pelaksanaanPelatihan' => $request->id_pelaksanaanPelatihan,
         ]);
+
         return response()->json([
             'statusCode' => 200,
             'message' => 'Success',

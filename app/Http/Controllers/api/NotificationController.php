@@ -4,18 +4,22 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Nilai;
+use App\Models\Notifications;
+use App\Models\Sertifikat;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
-class NilaiController extends Controller
+class NotificationController extends Controller
 {
-    public function adding(Request $request): JsonResponse
+    public function tambah(Request $request): JsonResponse
     {
-        Nilai::create([
-            'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
+        Notifications::create([
             'id_peserta' => $request->id_peserta,
-            'score' => $request->score
+            'title' => $request->title,
+            'detail' => $request->detail,
+            'tanggal' => $request->tanggal,
+            'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
         ]);
         return response()->json([
             'statusCode' => 200,

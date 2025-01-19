@@ -4,18 +4,21 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Nilai;
+use App\Models\Sertifikat;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
-class NilaiController extends Controller
+class SertifikatController extends Controller
 {
-    public function adding(Request $request): JsonResponse
+    public function sertifikatAdd(Request $request): JsonResponse
     {
-        Nilai::create([
+        Sertifikat::create([
             'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
             'id_peserta' => $request->id_peserta,
-            'score' => $request->score
+            'masa_berlaku' => $request->masa_berlaku,
+            'sertifikasi' => $request->sertifikasi,
+            'tanggal' => $request->tanggal,
         ]);
         return response()->json([
             'statusCode' => 200,

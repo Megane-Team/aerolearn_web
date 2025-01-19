@@ -2,32 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Alat;
+use App\Models\Feedback;
+use App\Models\FeedbackQuestion;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-class AlatController extends Controller
+class FeedbackController extends Controller
 {
     public function index()
     {
-        $alat = Alat::get();
-        return view('alat.index', ['data' => $alat]);
+        $feedback = FeedbackQuestion::get();
+        return view('feedback.index', ['data' => $feedback]);
     }
     public function tambah(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
+            'text' => 'required|string|max:255',
         ]);
-        // Alat::create([
-        //     'nama' => $request->nama,
-        // ]);
-        $this->postAlat(
-            $request->nama
+        $this->postFeedbackQuestion(
+            $validated['text']
         );
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil disimpan.');
+        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil disimpan.');
     }
 
-    private function postAlat($nama) { 
+    private function postFeedbackQuestion($text) { 
         try { 
             $token = session('api_token');
             Log::info('Token in postUser: ' . $token);
@@ -36,16 +35,15 @@ class AlatController extends Controller
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
-            ])->post($url . '/alat/+', [ 
-                'nama' => $nama, 
+            ])->post($url . '/feedback/question/+', [ 
+                'text'=> $text,
             ]); 
                     
             Log::info('Response: ' . $response->body());
             if ($response->successful()) {
-                Alat::create([
-                    'nama' => $nama,
+                FeedbackQuestion::create([
+                    'text' => $text,
                 ]);
-                    
                 return true;
             } else {
                 return false;
@@ -56,17 +54,11 @@ class AlatController extends Controller
     }
     public function update($id, Request $request)
     {
-        // $alat = Alat::findOrFail($id);
-        // $alat->nama = $request->nama;
-        // $alat->save();
-        $this->updateDataUser(
-            $id,
-            $request->nama
-        );
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil disimpan.');
+        $this->updateFeedbackQuestion($id, $request->text);
+        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil disimpan.');
     }
 
-    private function updateDataUser($id, $nama) { 
+    private function updateFeedbackQuestion($id, $text) { 
         try { 
             Log::info('halo');
             $url = config('app.api_base_url');
@@ -76,16 +68,18 @@ class AlatController extends Controller
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
-            ])->put($url . '/alat/update/'.$id, [ 
-                'nama' => $nama,
+            ])->put($url . '/feedback/question/update/'.$id, [ 
+                'text' => $text,
             ]); 
     
             Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 Log::info('success');
-                $alat = Alat::findOrFail($id);
-                $alat->nama = $nama;
-                $alat->save();
+                $feedback = FeedbackQuestion::findOrFail($id);
+                $feedback->update([
+                    'text' => $text,
+                ]);
+
                 return true;
             } else {
                 return false;
@@ -96,12 +90,11 @@ class AlatController extends Controller
     }
     public function hapus($id)
     {
-        // $alat = Alat::findOrFail($id);
-        // $alat->delete();
-        $this->deleteDataAlat($id);
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil dihapus.');
+        $this->deleteFeedbackquestion($id);
+        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil dihapus.');
     }
-    private function deleteDataAlat($id) { 
+
+    private function deleteFeedbackquestion($id) { 
         try { 
             Log::info('halo');
             $url = config('app.api_base_url');
@@ -110,11 +103,11 @@ class AlatController extends Controller
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
-            ])->delete($url . '/alat/delete/' . $id,);
+            ])->delete($url . '/feedback/question/delete/' . $id,);
             Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                $alat = Alat::findOrFail($id);
-                $alat->delete();
+                $feedback = FeedbackQuestion::findOrFail($id);
+                $feedback->delete();
                 return true;
             } else {
                 return false;

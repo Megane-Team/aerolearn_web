@@ -179,7 +179,15 @@
                 </li><!-- End Dashboard Nav -->
             @endif
 
-
+            @if (Auth::user()->user_role == 'admin')
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::routeIs('feedback.index') ? '' : 'collapsed' }}"
+                        href="{{ route('feedback.index') }}">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Feedback</span>
+                    </a>
+                </li><!-- End Dashboard Nav -->
+            @endif
 
             {{-- <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">

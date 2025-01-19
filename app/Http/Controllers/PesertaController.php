@@ -224,6 +224,7 @@ use Illuminate\Support\Facades\Log;
                 'user_role' => $userRole, 
                 'email' => $email, 
                 'password' => $password, 
+                'nama' => null,
             ]); 
                     
             Log::info('Response: ' . $response->body());
