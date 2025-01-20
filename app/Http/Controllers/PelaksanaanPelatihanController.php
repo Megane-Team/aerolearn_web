@@ -83,10 +83,8 @@ class PelaksanaanPelatihanController extends Controller
 
     private function postDataRancangan(Request $request) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $request);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -103,9 +101,7 @@ class PelaksanaanPelatihanController extends Controller
                 'is_selesai' => $request->is_selesai,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $data = PelaksanaanPelatihan::create([
                     'id_pelatihan' => $request->id_pelatihan,
                     'id_instruktur' => $request->id_instruktur,
@@ -140,10 +136,8 @@ class PelaksanaanPelatihanController extends Controller
 
     // private function postNotification($head, $data) { 
     //     try { 
-    //         Log::info('halo');
     //         $url = config('app.api_base_url');
     //         $token = session('api_token');
-    //         Log::info('Token from session: ' . $token);
     
     //         $response = Http::withHeaders([
     //             'Authorization' => 'Bearer ' . $token,
@@ -156,9 +150,7 @@ class PelaksanaanPelatihanController extends Controller
     //             'tanggal' => now(),
     //         ]); 
     
-    //         Log::info('Response: ' . $response->body());
     //         if ($response->successful()) { 
-    //             Log::info('success');
     //             Notifications::create([
     //                 'id_peserta' => $head->id,
     //                 'id_pelaksanaan_pelatihan' => $data->id,
@@ -227,10 +219,8 @@ class PelaksanaanPelatihanController extends Controller
 
     private function updateDataRancangan($id, Request $request) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $request);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -247,7 +237,6 @@ class PelaksanaanPelatihanController extends Controller
                 'is_selesai' => $request->is_selesai,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $pelaksanaanPelatihan = PelaksanaanPelatihan::findOrFail($id);
 
@@ -294,15 +283,12 @@ class PelaksanaanPelatihanController extends Controller
 
     private function deleteDataRancangan($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/rancangan/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = PelaksanaanPelatihan::findOrFail($id);
                 Ruangan::where('id', $data->id_ruangan)->update([
@@ -411,7 +397,6 @@ class PelaksanaanPelatihanController extends Controller
     private function postPeserta($id_pelaksanaan_pelatihan, $id_peserta) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -422,7 +407,6 @@ class PelaksanaanPelatihanController extends Controller
                 'id_peserta' => (int)$id_peserta,
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 PesertaPelatihan::create([
                 'id_peserta' => $id_peserta,
@@ -441,15 +425,12 @@ class PelaksanaanPelatihanController extends Controller
 
     private function deletePeserta($id_pelaksanaan_pelatihan, $id_peserta) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/peserta/delete/' . $id_peserta . '/' .$id_pelaksanaan_pelatihan,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
             PesertaPelatihan::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)
                 ->where('id_peserta', $id_peserta)
@@ -490,7 +471,6 @@ class PelaksanaanPelatihanController extends Controller
             'Content-Type' => 'application/json',  
             ])->get($url . '/file/e-sertifikat/'.$id); 
             
-            Log::info('Response: ' . $response->body()); 
             if ($response->successful()) { 
                 return redirect($url . '/file/e-sertifikat/'.$id); 
             } else { 
@@ -531,7 +511,6 @@ class PelaksanaanPelatihanController extends Controller
     private function updateValidasi($id) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -539,7 +518,6 @@ class PelaksanaanPelatihanController extends Controller
                 'Content-Type' => 'application/json'
             ])->put($url . '/absensi/validasi/' . $id); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 Absensi::where('id', $id)->update([
                     'status_absen' => 'Validasi'
@@ -569,7 +547,6 @@ class PelaksanaanPelatihanController extends Controller
     private function postAlat($id_pelaksanaan_pelatihan, $id_alat) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -580,7 +557,6 @@ class PelaksanaanPelatihanController extends Controller
                 'id_alat' => (int)$id_alat,
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                TableAlat::create([
                 'id_alat' => $id_alat,
@@ -597,15 +573,12 @@ class PelaksanaanPelatihanController extends Controller
 
     private function deleteTabelAlat($id_pelaksanaan_pelatihan) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/alat/delete/tabel/' . $id_pelaksanaan_pelatihan,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 TableAlat::where('id_pelaksanaan_pelatihan', $id_pelaksanaan_pelatihan)->delete();
                 return true;
@@ -662,10 +635,8 @@ class PelaksanaanPelatihanController extends Controller
 
     private function updateDataUser($id, $status) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -674,7 +645,6 @@ class PelaksanaanPelatihanController extends Controller
                 'status' => $status
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = PermintaanTraining::find($id);
                 $data->status = $status;
@@ -703,22 +673,19 @@ class PelaksanaanPelatihanController extends Controller
         public function selesai($id)
         {
             $this->updateSelesai($id);
-            return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+            return redirect()->back()->with('success', 'pelatihan telah selesai.');
         }
 
     private function updateSelesai($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
             ])->put($url . '/rancangan/selesai/'.$id); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = PelaksanaanPelatihan::find($id);
                 $data->is_selesai = "selesai";
