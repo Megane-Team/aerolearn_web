@@ -23,13 +23,12 @@ class FeedbackController extends Controller
         $this->postFeedbackQuestion(
             $validated['text']
         );
-        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil disimpan.');
+        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
     }
 
     private function postFeedbackQuestion($text) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -39,7 +38,6 @@ class FeedbackController extends Controller
                 'text'=> $text,
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 FeedbackQuestion::create([
                     'text' => $text,
@@ -55,15 +53,13 @@ class FeedbackController extends Controller
     public function update($id, Request $request)
     {
         $this->updateFeedbackQuestion($id, $request->text);
-        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil disimpan.');
+        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
     }
 
     private function updateFeedbackQuestion($id, $text) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -72,9 +68,7 @@ class FeedbackController extends Controller
                 'text' => $text,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $feedback = FeedbackQuestion::findOrFail($id);
                 $feedback->update([
                     'text' => $text,
@@ -91,20 +85,17 @@ class FeedbackController extends Controller
     public function hapus($id)
     {
         $this->deleteFeedbackquestion($id);
-        return redirect()->route('feedback.index')->with('success', 'Data peserta berhasil dihapus.');
+        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil dihapus.');
     }
 
     private function deleteFeedbackquestion($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/feedback/question/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $feedback = FeedbackQuestion::findOrFail($id);
                 $feedback->delete();
