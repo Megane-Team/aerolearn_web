@@ -30,7 +30,6 @@ class AlatController extends Controller
     private function postAlat($nama) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -39,8 +38,7 @@ class AlatController extends Controller
             ])->post($url . '/alat/+', [ 
                 'nama' => $nama, 
             ]); 
-                    
-            Log::info('Response: ' . $response->body());
+
             if ($response->successful()) {
                 Alat::create([
                     'nama' => $nama,
@@ -67,11 +65,9 @@ class AlatController extends Controller
     }
 
     private function updateDataUser($id, $nama) { 
-        try { 
-            Log::info('halo');
+        try {
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -80,9 +76,7 @@ class AlatController extends Controller
                 'nama' => $nama,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $alat = Alat::findOrFail($id);
                 $alat->nama = $nama;
                 $alat->save();
@@ -103,15 +97,12 @@ class AlatController extends Controller
     }
     private function deleteDataAlat($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/alat/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $alat = Alat::findOrFail($id);
                 $alat->delete();
