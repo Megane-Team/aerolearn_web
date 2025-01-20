@@ -34,10 +34,8 @@ class PelatihanController extends Controller
 
     private function postDataTraining($nama, $deskripsi, $koordinator, $kategori) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -49,9 +47,7 @@ class PelatihanController extends Controller
                 'kategori' => $kategori,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $pelatihan = Pelatihan::create([
                     'nama' => $nama,
                     'deskripsi' => $deskripsi,
@@ -91,10 +87,8 @@ class PelatihanController extends Controller
 
     private function updateDataTraining($id, $nama, $deskripsi, $koordinator, $kategori) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -106,9 +100,7 @@ class PelatihanController extends Controller
                 'kategori' => $kategori,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 Pelatihan::where('id', $id)->update([
                     'nama' => $nama,
                     'deskripsi' => $deskripsi,
@@ -134,15 +126,12 @@ class PelatihanController extends Controller
 
     private function deleteDataTraining($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/training/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $exam = Exam::where('id_pelatihan', $id)->delete();
                 $pelatihan = Pelatihan::findOrFail($id); 

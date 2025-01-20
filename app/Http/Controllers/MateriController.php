@@ -54,10 +54,8 @@ class MateriController extends Controller
 
     private function postMateriTraining($judul, $id_pelatihan, $file) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -69,9 +67,7 @@ class MateriController extends Controller
                 'id_pelatihan' => $id_pelatihan,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
 
                 $fileName = $judul . '.pdf';
                 $destinationPath = public_path('materi');
@@ -141,10 +137,8 @@ class MateriController extends Controller
 
     private function updateMateriTraining($judul, $id, $file) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -159,10 +153,8 @@ class MateriController extends Controller
             ->put($url . '/materi/update/' . $id, [ 
                 'judul' => $judul, 
             ]);
-    
-            Log::info('Response: ' . $response->body());
+
             if ($response->successful()) { 
-                Log::info('success');
                 $data = Materi::findOrFail($id);
                 $materiFile = $data->konten;
                 if ($file) { 
@@ -181,7 +173,6 @@ class MateriController extends Controller
                     'judul' => $judul,
                     'konten' => $materiFile,
                 ]);
-                Log::info('Data updated successfully');
                 return true;
             } else {
                 return false;
@@ -198,15 +189,12 @@ class MateriController extends Controller
 
     private function deleteDataMateri($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/materi/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = Materi::findOrFail($id);
                 $materiFile = $data->konten;

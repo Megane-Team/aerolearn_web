@@ -80,10 +80,8 @@ class QuestionController extends Controller
             ]);
 
             $gambar = null;
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             $gambar = $validated['gambar'] ?? null;
 
             $response = Http::withHeaders([ 'Authorization' => 'Bearer ' . $token, ]); 
@@ -93,7 +91,6 @@ class QuestionController extends Controller
                 'id_exam' => $validated['id_exam'],
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 if ($request->hasFile('gambar')) {
                     $file = $gambar;
@@ -123,10 +120,8 @@ class QuestionController extends Controller
 
     private function postDataOptions($jawaban, $id_question) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
 
             $response = Http::withHeaders([ 'Authorization' => 'Bearer ' . $token, ]); 
             $response = $response->post($url . '/exam/question/opsi/+', [
@@ -134,7 +129,6 @@ class QuestionController extends Controller
                 'id_question' => $id_question,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 OpsiJawaban::create([
                     'jawaban' => $jawaban,
@@ -151,10 +145,8 @@ class QuestionController extends Controller
 
     private function postTrueAnswer($text, $id_question) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
 
             $response = Http::withHeaders([ 'Authorization' => 'Bearer ' . $token, ]); 
             $response = $response->post($url . '/exam/question/true_answer/+', [
@@ -162,7 +154,6 @@ class QuestionController extends Controller
                 'id_question' => $id_question,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 JawabanBenar::create([
                     'text' => $text,
@@ -185,15 +176,12 @@ class QuestionController extends Controller
 
     private function deleteDataTraining($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/exam/question/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = Question::findOrFail($id);
                 $data->delete();

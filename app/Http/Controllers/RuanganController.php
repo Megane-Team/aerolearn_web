@@ -33,7 +33,6 @@ class RuanganController extends Controller
     private function postRuangan($nama, $status_ruangan) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -44,7 +43,6 @@ class RuanganController extends Controller
                 'status_ruangan' => $status_ruangan, 
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 Ruangan::create([
                     'nama' => $nama,
@@ -74,10 +72,8 @@ class RuanganController extends Controller
 
     private function updateDataRuangan($id, $nama, $status_ruangan) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -87,9 +83,7 @@ class RuanganController extends Controller
                 'status_ruangan' => $status_ruangan,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $ruangan = Ruangan::findOrFail($id);
                 $ruangan->nama = $nama;
                 $ruangan->status_ruangan = $status_ruangan;
@@ -113,15 +107,12 @@ class RuanganController extends Controller
 
     private function deleteDataRuangan($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/ruangan/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $ruangan = Ruangan::findOrFail($id);
                 $ruangan->delete();
