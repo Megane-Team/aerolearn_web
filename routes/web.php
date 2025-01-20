@@ -121,7 +121,7 @@ Route::middleware(['auth'])->group(function () {
 
         if ($response->successful()) { 
             $karyawan = Karyawan::create([
-                'nik'       => (int) $row[0] ?? null,
+                'nik'       => $row[0] ?? null,
                 'nama'      => $row[1] ?? null,
                 'tanggal_lahir'   => $row[2] ?? null,
                 'tmt'       => $row[3] ?? null,
