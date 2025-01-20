@@ -60,7 +60,6 @@ class PelatihanController extends Controller
                 ]);
 
                 Exam::create([
-                    'judul' => $nama,
                     'id_pelatihan' => $pelatihan->id
                 ]);
 

@@ -48,13 +48,24 @@
                                             <td>{{ $v->jam_selesai }}</td>
                                             <td>{{ $v->jenis_training }}</td>
                                             <td>{{ $v->ruangan->nama }}</td>
-                                            <td>{{ $v->is_selesai }}</td>
+                                            <td class="text-nowrap">
+                                                <span>
+                                                    {{ $v->is_selesai }}
+                                                </span>
+                                                @if (Auth::user()->user_role == 'instruktur')
+                                                    @if ($v->is_selesai == 'belum')
+                                                        <br>
+                                                        <a href="{{ route('pelaksanaan.selesai', [$v->id]) }}"
+                                                            class="btn btn-sm btn-success">selesaikan</a>
+                                                    @endif
+                                                @endif
+                                            </td>
                                             <td class="text-nowrap">
                                                 <span
                                                     class="badge 
-                                                    @if ($v->permintaantraining->status == 'menunggu' || $v->permintaantraining->status == 'instruktur menunggu') bg-warning
+                                                    @if ($v->permintaantraining->status == 'menunggu') bg-warning
                                                     @elseif($v->permintaantraining->status == 'terima') bg-success
-                                                    @elseif($v->permintaantraining->status == 'tolak' || $v->permintaantraining->status == 'instruktur menolak') bg-danger @endif">
+                                                    @elseif($v->permintaantraining->status == 'tolak') bg-danger @endif">
                                                     {{ $v->permintaantraining->status }}
                                                 </span>
                                                 @if (Auth::user()->user_role == 'kepala pelatihan')
@@ -63,15 +74,6 @@
                                                         <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 1]) }}"
                                                             class="btn btn-sm btn-success">terima</a>
                                                         <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 2]) }}"
-                                                            class="btn btn-sm btn-danger">tolak</a>
-                                                    @endif
-                                                @endif
-                                                @if (Auth::user()->user_role == 'instruktur')
-                                                    @if ($v->permintaantraining->status == 'instruktur menunggu')
-                                                        <br>
-                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 3]) }}"
-                                                            class="btn btn-sm btn-success">terima</a>
-                                                        <a href="{{ route('pelaksanaan.status', [$v->permintaantraining->id, 4]) }}"
                                                             class="btn btn-sm btn-danger">tolak</a>
                                                     @endif
                                                 @endif

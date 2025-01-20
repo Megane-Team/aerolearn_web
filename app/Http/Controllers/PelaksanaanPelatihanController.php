@@ -689,15 +689,50 @@ class PelaksanaanPelatihanController extends Controller
         } 
     }
 
-    public function feedbackUser($id_user, $id_pelaksanaanPelatihan)
-{
-    $feedback = Feedback::where('id_user', $id_user)
-                        ->where('id_pelaksanaanPelatihan', $id_pelaksanaanPelatihan)
-                        ->get();
+        public function feedbackUser($id_user, $id_pelaksanaanPelatihan)
+        {
+            $feedback = Feedback::where('id_user', $id_user)
+                                ->where('id_pelaksanaanPelatihan', $id_pelaksanaanPelatihan)
+                                ->get();
+            
+            return view('pelaksanaan.feedback', [
+                'feedback' => $feedback
+            ]);
+        }
+
+        public function selesai($id)
+        {
+            $this->updateSelesai($id);
+            return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+        }
+
+    private function updateSelesai($id) { 
+        try { 
+            Log::info('halo');
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            Log::info('Token from session: ' . $token);
+            
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->put($url . '/rancangan/selesai/'.$id); 
     
-    return view('pelaksanaan.feedback', [
-        'feedback' => $feedback
-    ]);
-}
+            Log::info('Response: ' . $response->body());
+            if ($response->successful()) { 
+                $data = PelaksanaanPelatihan::find($id);
+                $data->is_selesai = "selesai";
+                $data->save();
+                $ruangan = Ruangan::find($data->id_ruangan); 
+                $ruangan->status_ruangan = "tidak dipakai"; 
+                $ruangan->save();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
 
 }

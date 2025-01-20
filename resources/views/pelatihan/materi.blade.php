@@ -24,7 +24,6 @@
                                     <tr class="text-nowrap">
                                         <th>No</th>
                                         <th>Judul</th>
-                                        <th>Konten</th>
                                         <th>Materi</th>
                                         @if (Auth::user()->user_role == 'admin')
                                             <th>#</th>
@@ -36,8 +35,7 @@
                                         <tr>
                                             <td>{{ $k + 1 }}</td>
                                             <td>{{ $v->judul }}</td>
-                                            <td>{{ $v->konten }}</td>
-                                            <td><a href="{{ asset($v->link) }}" target="_blank"
+                                            <td><a href="{{ asset($v->konten) }}" target="_blank"
                                                     class="btn btn-sm btn-primary">lihat</a></td>
                                             @if (Auth::user()->user_role == 'admin')
                                                 <td>
@@ -76,10 +74,10 @@
                             <input type="text" class="form-control" id="" name="judul" required>
                             <input type="hidden" name="id_pelatihan" value="{{ $data->id }}">
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="" class="form-label">Konten</label>
                             <textarea name="konten" id="" class="form-control" rows="5" required></textarea>
-                        </div>
+                        </div> -->
                         <div class="mb-3">
                             <label for="" class="form-label">materi file (opsional)</label>
                             <input type="file" class="form-control" id="" name="materi">
@@ -110,10 +108,10 @@
                                 <input type="text" class="form-control" id="" name="judul" required
                                     value="{{ $v->judul }}">
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="" class="form-label">Konten</label>
                                 <textarea name="konten" id="" class="form-control" rows="5" required>{{ $v->konten }}</textarea>
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="" class="form-label">materi file (opsional)</label>
                                 <input type="file" class="form-control" id="" name="materi">

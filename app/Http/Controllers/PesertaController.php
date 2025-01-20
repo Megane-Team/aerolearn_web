@@ -155,7 +155,7 @@ use Illuminate\Support\Facades\Log;
                     'Authorization' => 'Bearer ' . $token,
                     'Content-Type' => 'application/json'
                 ])->post($url . '/karyawan/+', [ 
-                    'nik' => (int)$nik, 
+                    'nik' => $nik, 
                     'nama' => $nama, 
                     'tanggal_lahir' => $tanggal_lahir, 
                     'tempat_lahir' => $tempat_lahir, 
@@ -348,7 +348,7 @@ use Illuminate\Support\Facades\Log;
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
             ])->put($url . '/karyawan/update/' . $id, [ 
-                'nik' => (int)$nik, 
+                'nik' => $nik, 
                 'nama' => $nama, 
                 'tanggal_lahir' => $tanggal_lahir, 
                 'tempat_lahir' => $tempat_lahir, 
