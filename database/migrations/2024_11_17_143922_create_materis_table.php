@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('judul');
             $table->text('konten')->nullable();
-            $table->string('link')->nullable();
             $table->foreignId('id_pelatihan')->constrained('pelatihan')->onDelete('cascade');
             $table->timestamps();
         });
