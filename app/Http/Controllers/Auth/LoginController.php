@@ -51,7 +51,6 @@ class LoginController extends Controller
      */
     public function login(Request $request) 
     {   
-        Log::info('Memulai proses login');
 
         $request->validate([
             'email' => 'required|email',
@@ -59,7 +58,6 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            Log::info('Validasi input berhasil');
             $url = config('app.api_base_url');
             try {
                 $response = Http::withHeaders([
@@ -69,22 +67,17 @@ class LoginController extends Controller
                     'password' => $request->password,
                 ]);
 
-                Log::info('Permintaan HTTP dikirim', ['response' => $response->json()]);
-
                 if ($response->successful()) {
-                    Log::info('Autentikasi berhasil');
                     $data = $response->json();
                     $token = $data['token'];
                     if (!session()->isStarted()) { session()->start(); } 
                     session(['api_token' => $token]);
-                    Log::info('Token disimpan di session', ['api_token' => session('api_token')]); 
                     $response = [
                         'statusCode' => 200,
                         'message' => "Login Success",
                         'token' => $data['token'],
                         'user_role' => $data['user_role']
                     ];
-                    Log::info('Login berhasil', ['response' => $response]);
                     
                     return redirect($this->redirectTo);
                 }

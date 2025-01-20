@@ -45,7 +45,6 @@ class UserController extends Controller
     private function postUser(Request $request) { 
         try { 
             $token = session('api_token');
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -61,10 +60,8 @@ class UserController extends Controller
                 'password' => $request->password, 
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 
-                Log::info($request->nama);
                 return true;
             } else {
                 return false;
@@ -92,10 +89,8 @@ class UserController extends Controller
     
     private function updateDataUser($id, Request $request) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -107,9 +102,7 @@ class UserController extends Controller
                 'password' => $request->password,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
-                Log::info('success');
                 $user = User::findOrFail($id);
                 $user->email = $request->email;
                 $user->nama = $request->nama;
@@ -137,15 +130,12 @@ class UserController extends Controller
 
     private function deleteDataUser($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/user/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $user = User::findOrFail($id);
                 $user->delete();

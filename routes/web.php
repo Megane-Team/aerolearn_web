@@ -120,7 +120,6 @@ Route::middleware(['auth'])->group(function () {
         ]); 
 
         if ($response->successful()) { 
-            Log::info('success');
             $karyawan = Karyawan::create([
                 'nik'       => $row[0] ?? null,
                 'nama'      => $row[1] ?? null,
@@ -137,7 +136,6 @@ Route::middleware(['auth'])->group(function () {
                 'no_telp' => 'tidak ada'
             ]);
 
-            Log::info('Calling postUser function');
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'

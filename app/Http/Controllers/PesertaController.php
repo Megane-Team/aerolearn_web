@@ -71,7 +71,6 @@ use Illuminate\Support\Facades\Log;
                     'password' => 'required|string|min:8',
                 ]);
 
-                Log::info('masuk ke sini');
 
                 $berhasil  = $this->postDataEksternal(
                     $request->nama,
@@ -92,10 +91,8 @@ use Illuminate\Support\Facades\Log;
         }
         private function postDataEksternal($nama, $email, $alamat, $no_telp, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $password) { 
             try { 
-                Log::info('halo');
                 $url = config('app.api_base_url');
                 $token = session('api_token');
-                Log::info('Token from session: ' . $token);
         
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
@@ -110,9 +107,7 @@ use Illuminate\Support\Facades\Log;
                     'jenis_kelamin' => $jenis_kelamin,
                 ]); 
         
-                Log::info('Response: ' . $response->body());
                 if ($response->successful()) { 
-                    Log::info('success');
                     $eksternal = Eksternal::create([
                         'nama' => $nama,
                         'tanggal_lahir' => $tanggal_lahir,
@@ -123,7 +118,6 @@ use Illuminate\Support\Facades\Log;
                         'no_telp' => $no_telp,
                     ]);
         
-                    Log::info('Calling postUser function');
                     $this->postUser(
                         $email,
                         $password,
@@ -146,10 +140,8 @@ use Illuminate\Support\Facades\Log;
 
         private function postDataInternal($nik, $nama, $tanggal_lahir, $tempat_lahir, $jenis_kelamin, $unit_org, $alamat, $status, $posisi, $email, $no_telp, $tmt, $jobcode, $password) { 
             try { 
-                Log::info('halo');
                 $url = config('app.api_base_url');
                 $token = session('api_token');
-                Log::info('Token from session: ' . $token);
         
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
@@ -170,9 +162,7 @@ use Illuminate\Support\Facades\Log;
                     'job_code' => $jobcode,
                 ]); 
         
-                Log::info('Response: ' . $response->body());
                 if ($response->successful()) { 
-                    Log::info('success');
                     $karyawan = Karyawan::create([
                         'nik' => $nik,
                         'nama' => $nama,
@@ -189,7 +179,6 @@ use Illuminate\Support\Facades\Log;
                         'jobcode' => $jobcode,
                     ]);
         
-                    Log::info('Calling postUser function');
                     $this->postUser(
                         $email,
                         $password,
@@ -213,7 +202,6 @@ use Illuminate\Support\Facades\Log;
 
         private function postUser($email, $password, $id_eksternal, $id_karyawan, $userType, $userRole, $token, $nama) { 
         try { 
-            Log::info('Token in postUser: ' . $token);
             $url = config('app.api_base_url');
 
             $response = Http::withHeaders([
@@ -229,7 +217,6 @@ use Illuminate\Support\Facades\Log;
                 'nama' => null,
             ]); 
                     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) {
                 User::create([
                     'nama' => $nama,
@@ -291,10 +278,8 @@ use Illuminate\Support\Facades\Log;
 
     private function updateDataEksternal($id, $nama, $email, $alamat, $no_telp, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $password) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -310,7 +295,6 @@ use Illuminate\Support\Facades\Log;
                 'password' => $password,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $user = User::findOrFail($id);
                 $user->email = $email;
@@ -339,10 +323,8 @@ use Illuminate\Support\Facades\Log;
 
     private function updateDataInternal($id, $nik, $nama, $tanggal_lahir, $tempat_lahir, $jenis_kelamin, $unit_org, $alamat, $status, $posisi, $email, $no_telp, $tmt, $jobcode, $password) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
@@ -364,7 +346,6 @@ use Illuminate\Support\Facades\Log;
                 'password' => $password,
             ]); 
     
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $user = User::findOrFail($id);
                 $user->email = $email;
@@ -407,15 +388,12 @@ use Illuminate\Support\Facades\Log;
     }
     private function deleteDataInternal($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/karyawan/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $user = User::findOrFail($id);
                 $user->internal->delete();
@@ -431,15 +409,12 @@ use Illuminate\Support\Facades\Log;
 
     private function deleteDataEksternal($id) { 
         try { 
-            Log::info('halo');
             $url = config('app.api_base_url');
             $token = session('api_token');
-            Log::info('Token from session: ' . $token);
     
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/eksternal/delete/' . $id,);
-            Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $user = User::findOrFail($id);
                 $user->eksternal->delete();
