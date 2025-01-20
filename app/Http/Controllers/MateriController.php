@@ -22,8 +22,7 @@ class MateriController extends Controller
         // Validasi data
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'konten' => 'nullable|string',
-            'materi' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx', // Maksimal 2MB
+            'materi' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
             'id_pelatihan' => 'required|integer',
         ]);
 
@@ -37,7 +36,6 @@ class MateriController extends Controller
 
         $this->postMateriTraining(
             $validated['judul'],
-            $validated['konten'],
             $validated['id_pelatihan'],
             $request->hasFile('materi') ? $request->file('materi') : null
         );
@@ -54,7 +52,7 @@ class MateriController extends Controller
         return back()->with('success', 'Data berhasil disimpan.');
     }
 
-    private function postMateriTraining($judul, $konten, $id_pelatihan, $file) { 
+    private function postMateriTraining($judul, $id_pelatihan, $file) { 
         try { 
             Log::info('halo');
             $url = config('app.api_base_url');
@@ -68,7 +66,6 @@ class MateriController extends Controller
             ->asMultipart()
             ->post($url . '/materi/+', [ 
                 'judul' => $judul,
-                'konten' => $konten,
                 'id_pelatihan' => $id_pelatihan,
             ]); 
     
@@ -82,8 +79,7 @@ class MateriController extends Controller
                 $materiFile = 'materi/' . $fileName;
                 Materi::create([
                     'judul' => $judul,
-                    'konten' => $fileName,
-                    'link' => $materiFile,
+                    'konten' => $materiFile,
                     'id_pelatihan' => $id_pelatihan,
                 ]);
 
@@ -102,7 +98,6 @@ class MateriController extends Controller
         // Validasi data
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'konten' => 'nullable|string',
             'materi' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx', // Maksimal 2MB
         ]);
 
@@ -136,7 +131,6 @@ class MateriController extends Controller
 
         $this->updateMateriTraining(
             $validated['judul'],
-            $validated['konten'],
             $id,
             $request->hasFile('materi') ? $request->file('materi') : null
         );
@@ -145,7 +139,7 @@ class MateriController extends Controller
         return back()->with('success', 'Data berhasil disimpan.');
     }
 
-    private function updateMateriTraining($judul, $konten, $id, $file) { 
+    private function updateMateriTraining($judul, $id, $file) { 
         try { 
             Log::info('halo');
             $url = config('app.api_base_url');
@@ -164,14 +158,13 @@ class MateriController extends Controller
             $response = $response->asMultipart() 
             ->put($url . '/materi/update/' . $id, [ 
                 'judul' => $judul, 
-                'konten' => $konten, 
             ]);
     
             Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 Log::info('success');
                 $data = Materi::findOrFail($id);
-                $materiFile = $data->link;
+                $materiFile = $data->konten;
                 if ($file) { 
                     if (file_exists(public_path($materiFile))) { 
                         unlink(public_path($materiFile)
@@ -181,14 +174,12 @@ class MateriController extends Controller
                     $file->move($destinationPath, $fileName); 
                     $materiFile = 'materi/' . $fileName; 
                 } else{
-                    $fileName = $data->konten;
-                    $materiFile = $data->link;
+                    $materiFile = $data->konten;
                 } 
 
                 $data->update([
                     'judul' => $judul,
-                    'konten' => $fileName,
-                    'link' => $materiFile,
+                    'konten' => $materiFile,
                 ]);
                 Log::info('Data updated successfully');
                 return true;
@@ -218,7 +209,7 @@ class MateriController extends Controller
             Log::info('Response: ' . $response->body());
             if ($response->successful()) { 
                 $data = Materi::findOrFail($id);
-                $materiFile = $data->link;
+                $materiFile = $data->konten;
                 if (file_exists(public_path($materiFile))) { 
                     unlink(public_path($materiFile)
                 ); }

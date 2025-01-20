@@ -17,6 +17,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+
+
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 Auth::routes(['register' => false]);
@@ -66,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('pelaksanaan-update/{id}', [PelaksanaanPelatihanController::class, 'update'])->name('pelaksanaan.update');
     Route::get('pelaksanaan-hapus/{id}', [PelaksanaanPelatihanController::class, 'hapus'])->name('pelaksanaan.hapus');
     Route::get('pelaksanaan-status/{id}/{t}', [PelaksanaanPelatihanController::class, 'status'])->name('pelaksanaan.status');
+    Route::get('pelaksanaan-selesai/{id}', [PelaksanaanPelatihanController::class, 'selesai'])->name('pelaksanaan.selesai');
 
     Route::get('pelaksanaan-peserta/{id}', [PelaksanaanPelatihanController::class, 'peserta'])->name('pelaksanaan-peserta.index');
     Route::get('pelaksanaan-peserta-absensi-validasi/{id}', [PelaksanaanPelatihanController::class, 'validasi'])->name('pelaksanaan-peserta.validasi');
@@ -90,6 +96,31 @@ Route::middleware(['auth'])->group(function () {
     Route::post('import', function (Request $request) {
         $data = json_decode($request->input('json_data'), true);
         foreach ($data as $row) {
+
+        $url = config('app.api_base_url');
+        $token = session('api_token');
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json'
+        ])->post($url . '/karyawan/+', [ 
+            'nik'       => $row[0] ?? null,
+            'nama'      => $row[1] ?? null,
+            'tanggal_lahir'   => $row[2] ?? null,
+            'tmt'       => $row[3] ?? null,
+            'tempat_lahir'  => $row[4] ?? null,
+            'jenis_kelamin'        => $row[5] ?? null,
+            'unit_org'        => $row[6] ?? null,
+            'job_code'  => $row[7] ?? null,
+            'status' => 'tidak diketahui',
+            'alamat' => $row[4] ?? null,
+            'posisi' => 'tidak diketahui',
+            'email' =>  $row[0].'@gmail.com',
+            'no_telp' => 'tidak ada'
+        ]); 
+
+        if ($response->successful()) { 
+            Log::info('success');
             $karyawan = Karyawan::create([
                 'nik'       => $row[0] ?? null,
                 'nama'      => $row[1] ?? null,
@@ -99,21 +130,40 @@ Route::middleware(['auth'])->group(function () {
                 'jenis_kelamin'        => $row[5] ?? null,
                 'unit_org'        => $row[6] ?? null,
                 'jobcode'  => $row[7] ?? null,
-                'status' => 'sehat',
+                'status' => 'tidak diketahui',
                 'alamat' => $row[4] ?? null,
                 'posisi' => 'tidak diketahui',
                 'email' =>  $row[0].'@gmail.com',
-                'no_telp' => '08999'
+                'no_telp' => 'tidak ada'
             ]);
-            User::create([
+
+            Log::info('Calling postUser function');
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->post($url . '/user/registrasi', [ 
+                'id_eksternal' => null, 
                 'id_karyawan' => $karyawan->id,
-                'email' => $karyawan->email,
-                'nama' => $karyawan->nama,
-                'password' => Hash::make('password'),
-                'user_type' => 'internal',
-                'user_role' => 'peserta'
-            ]);
+                'user_type' => 'internal', 
+                'user_role' => 'peserta', 
+                'email' => $karyawan->email, 
+                'password' => 'password', 
+                'nama' => null,
+            ]); 
+
+            if($response->successful()){
+                User::create([
+                    'id_karyawan' => $karyawan->id,
+                    'email' => $karyawan->email,
+                    'nama' => $karyawan->nama,
+                    'password' => Hash::make('password'),
+                    'user_type' => 'internal',
+                    'user_role' => 'peserta'
+                ]);
+            }
+
         }
+    }
 
         return redirect()->route('import')->with('success', 'Data berhasil diimpor!');
 

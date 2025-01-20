@@ -31,7 +31,7 @@
                                     @foreach ($data->exam as $k => $v)
                                         <tr>
                                             <td>{{ $k + 1 }}</td>
-                                            <td>{{ $v->judul }}</td>
+                                            <td>Ujian</td>
                                             <td>
                                                 <!-- <a href="{{ route('exam.hapus', $v->id) }}"
                                                     class="btn btn-danger btn-sm">Hapus</a>
