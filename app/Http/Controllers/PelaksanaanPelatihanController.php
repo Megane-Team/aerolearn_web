@@ -48,7 +48,7 @@ class PelaksanaanPelatihanController extends Controller
             'is_selesai' => 'required',
         ]);
 
-        $this->postDataRancangan($request);
+        $berhasil = $this->postDataRancangan($request);
         // $data = PelaksanaanPelatihan::create([
         //     'id_pelatihan' => $request->id_pelatihan,
         //     'id_instruktur' => $request->id_instruktur,
@@ -78,7 +78,11 @@ class PelaksanaanPelatihanController extends Controller
         // ]);
 
         // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Data berhasil disimpan.');
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal disimpan.');
+        }else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function postDataRancangan(Request $request) { 
@@ -121,10 +125,12 @@ class PelaksanaanPelatihanController extends Controller
                     'status' => 'menunggu'
                 ]);
                 $head = User::where('user_role', 'kepala pelatihan')->first();
-
-                // $this->postNotification($head, $data);
-
-
+                $this->postNotification(
+                    $head->id,
+                    $data->id,
+                    'Memerlukan konfirmasi',
+                    'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi'
+                );
                 return true;
             } else {
                 return false;
@@ -134,38 +140,36 @@ class PelaksanaanPelatihanController extends Controller
         } 
     }
 
-    // private function postNotification($head, $data) { 
-    //     try { 
-    //         $url = config('app.api_base_url');
-    //         $token = session('api_token');
-    
-    //         $response = Http::withHeaders([
-    //             'Authorization' => 'Bearer ' . $token,
-    //             'Content-Type' => 'application/json'
-    //         ])->post($url . '/notification/+', [ 
-    //             'id_user' => $head->id,
-    //             'id_pelaksanaan_pelatihan' => $data->id,
-    //             'title' => 'Memerlukan konfirmasi',
-    //             'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
-    //             'tanggal' => now(),
-    //         ]); 
-    
-    //         if ($response->successful()) { 
-    //             Notifications::create([
-    //                 'id_peserta' => $head->id,
-    //                 'id_pelaksanaan_pelatihan' => $data->id,
-    //                 'title' => 'Memerlukan konfirmasi',
-    //                 'detail' => 'Pelaksanaan pelatihan ' . $data->pelatihan->nama . ' memerlukan konfirmasi',
-    //                 'tanggal' => now(),
-    //             ]);
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     } catch (\Exception $e) { 
-    //         return false;
-    //     } 
-    // }
+    private function postNotification($idUser, $id_pelaksanaan_pelatihan, $title, $detail) { 
+        try { 
+            $url = config('app.api_base_url');
+            $token = session('api_token');
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->post($url . '/notification/api/+', [ 
+                'id_user' => $idUser,
+                'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
+                'title' => $title,
+                'detail' => $detail,
+                'tanggal' => now(),
+            ]); 
+            if ($response->successful()) { 
+                Notifications::create([
+                    'id_peserta' => $idUser,
+                    'id_pelaksanaan_pelatihan' => $id_pelaksanaan_pelatihan,
+                    'title' => $title,
+                    'detail' => $detail,
+                    'tanggal' => now(),
+                ]);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) { 
+            return false;
+        } 
+    }
 
     public function update($id, Request $request)
     {
@@ -183,7 +187,7 @@ class PelaksanaanPelatihanController extends Controller
         ]);
 
 
-        $this->updateDataRancangan($id, $request);
+        $berhasil = $this->updateDataRancangan($id, $request);
         // Ambil data pelaksanaan pelatihan berdasarkan ID
         // $pelaksanaanPelatihan = PelaksanaanPelatihan::findOrFail($id);
 
@@ -214,7 +218,11 @@ class PelaksanaanPelatihanController extends Controller
         // }
 
         // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Data berhasil diperbarui.');
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal diperbarui.');
+        }else{
+            return back()->with('success', 'Data berhasil diperbarui.');
+        }
     }
 
     private function updateDataRancangan($id, Request $request) { 
@@ -277,8 +285,12 @@ class PelaksanaanPelatihanController extends Controller
     {
         // $data = PelaksanaanPelatihan::findOrFail($id);
         // $data->delete();
-        $this->deleteDataRancangan($id);
-        return back()->with('success', 'Data berhasil dihapus.');
+        $berhasil = $this->deleteDataRancangan($id);
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal dihapus.');
+        }else{
+            return back()->with('success', 'Data berhasil dihapus.');
+        }    
     }
 
     private function deleteDataRancangan($id) { 
@@ -487,8 +499,12 @@ class PelaksanaanPelatihanController extends Controller
         // Absensi::where('id', $id)->update([
         //     'status_absen' => 'Validasi'
         // ]);
-        $this->updateValidasi($id);
-        return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+        $berhasil = $this->updateValidasi($id);
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal diperbarui.');
+        }else{
+            return redirect()->back()->with('success', 'Data berhasil diperbarui.');
+        }
     }
     public function alat($id)
     {
@@ -521,7 +537,7 @@ class PelaksanaanPelatihanController extends Controller
             if ($response->successful()) {
                 Absensi::where('id', $id)->update([
                     'status_absen' => 'Validasi'
-            ]);
+                ]);
                 return true;
             } else {
                 return false;
@@ -534,14 +550,14 @@ class PelaksanaanPelatihanController extends Controller
     {
         $this->deleteTabelAlat($request->id_pelaksanaan_pelatihan);
         // TableAlat::where('id_pelaksanaan_pelatihan', $request->id_pelaksanaan_pelatihan)->delete();
-        foreach ($request->id_alat as $key => $value) {
-            // TableAlat::create([
-            //     'id_alat' => $value,
-            //     'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan
-            // ]);
-            $this->postAlat($request->id_pelaksanaan_pelatihan, $value);
-        }
-        return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+        if ($request && isset($request->id_alat) && is_array($request->id_alat)) { 
+            foreach ($request->id_alat as $key => $value) { 
+                // TableAlat::create([ // 'id_alat' => $value, 
+                // 'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan 
+                // ]); 
+                
+                $this->postAlat($request->id_pelaksanaan_pelatihan, $value); } }
+        return redirect()->back()->with('success', 'Data alat berhasil diperbarui.');
     }
 
     private function postAlat($id_pelaksanaan_pelatihan, $id_alat) { 
@@ -593,14 +609,12 @@ class PelaksanaanPelatihanController extends Controller
     public function status($id, $t)
     {
         $status = $t == 1 ? 'terima' : 'tolak';
-        $this->updateDataUser($id, $status);
-        // $data = PermintaanTraining::find($id);
+        $berhasil = $this->updateDataUser($id, $status);
+        $data = PermintaanTraining::find($id);
         // $data->status = $status;
         // $data->save();
         // if ($t == 1) {
-        //     $instruktur = User::where('user_role', 'instruktur')->first();
-        //     $pelaksanaanPelatihan = PelaksanaanPelatihan::find($data->id_pelaksanaanPelatihan);
-        //     $peserta = PesertaPelatihan::where('id_pelaksanaan_pelatihan',$data->id_pelaksanaanPelatihan);
+            // $peserta = PesertaPelatihan::where('id_pelaksanaan_pelatihan',$data->id_pelaksanaanPelatihan);
         // }
         // if($t == 1){
         //     $data->status = 'instruktur menunggu';
@@ -629,9 +643,14 @@ class PelaksanaanPelatihanController extends Controller
         //     ]);
         // }
         
-        
-        return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal diperbarui.');
+        }else{
+            return redirect()->back()->with('success', 'Data peserta berhasil diperbarui.');
+        }
     }
+
+
 
     private function updateDataUser($id, $status) { 
         try { 
@@ -650,6 +669,16 @@ class PelaksanaanPelatihanController extends Controller
                 $data->status = $status;
                 $data->save();
 
+                if($status == 'terima'){
+                    $pelaksanaanPelatihan = PelaksanaanPelatihan::find($data->id_pelaksanaanPelatihan);
+                    $instruktur = User::where('id', $pelaksanaanPelatihan->id_instruktur)->first();
+                    $this->postNotification(
+                        $instruktur->id,
+                        $pelaksanaanPelatihan->id,
+                        'Pelatihan diadakan',
+                        'Pelaksanaan pelatihan ' . $pelaksanaanPelatihan->pelatihan->nama . ' akan dilaksanakan pada ' . $pelaksanaanPelatihan->tanggal_mulai
+                    );
+                }
                 return true;
             } else {
                 return false;
@@ -672,8 +701,12 @@ class PelaksanaanPelatihanController extends Controller
 
         public function selesai($id)
         {
-            $this->updateSelesai($id);
-            return redirect()->back()->with('success', 'pelatihan telah selesai.');
+            $berhasil = $this->updateSelesai($id);
+            if(!$berhasil){
+                return back()->with('error', 'Data gagal diperbarui.');
+            }else{
+                return redirect()->back()->with('success', 'pelatihan telah selesai.');
+            }
         }
 
     private function updateSelesai($id) { 

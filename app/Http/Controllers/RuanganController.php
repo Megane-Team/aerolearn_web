@@ -23,11 +23,16 @@ class RuanganController extends Controller
         //     'nama' => $request->nama,
         //     'status_ruangan' => $request->status_ruangan
         // ]);
-        $this->postRuangan(
+        $berhasil = $this->postRuangan(
             $request->nama,
             $request->status_ruangan
         );
-        return redirect()->route('ruangan.index')->with('success', 'Data peserta berhasil disimpan.');
+
+        if(!$berhasil){
+            return redirect()->route('ruangan.index')->with('error', 'Data ruangan gagal disimpan.');
+        } else{
+            return redirect()->route('ruangan.index')->with('success', 'Data ruangan berhasil disimpan.');
+        }
     }
 
     private function postRuangan($nama, $status_ruangan) { 
@@ -62,12 +67,17 @@ class RuanganController extends Controller
         // $ruangan->nama = $request->nama;
         // $ruangan->status_ruangan = $request->status_ruangan;
         // $ruangan->save();
-        $this->updateDataRuangan(
+        $berhasil = $this->updateDataRuangan(
             $id,
             $request->nama,
             $request->status_ruangan
         );
-        return redirect()->route('ruangan.index')->with('success', 'Data peserta berhasil disimpan.');
+
+        if( !$berhasil){
+            return redirect()->route('ruangan.index')->with('error', 'Data ruangan gagal disimpan.');
+        }else{
+            return redirect()->route('ruangan.index')->with('success', 'Data ruangan berhasil disimpan.');
+        }
     }
 
     private function updateDataRuangan($id, $nama, $status_ruangan) { 
@@ -101,8 +111,12 @@ class RuanganController extends Controller
     {
         // $ruangan = Ruangan::findOrFail($id);
         // $ruangan->delete();
-        $this->deleteDataRuangan($id);
-        return redirect()->route('ruangan.index')->with('success', 'Data peserta berhasil dihapus.');
+        $berhasil = $this->deleteDataRuangan($id);
+        if( !$berhasil ){
+            return redirect()->route('ruangan.index')->with('error', 'Data ruangan gagal dihapus.');
+        }else{
+            return redirect()->route('ruangan.index')->with('success', 'Data ruangan berhasil dihapus.');
+        }
     }
 
     private function deleteDataRuangan($id) { 

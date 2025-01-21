@@ -20,10 +20,15 @@ class FeedbackController extends Controller
         $validated = $request->validate([
             'text' => 'required|string|max:255',
         ]);
-        $this->postFeedbackQuestion(
+        $berhasil = $this->postFeedbackQuestion(
             $validated['text']
         );
-        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
+
+        if( !$berhasil ){
+            return redirect()->route('feedback.index')->with('error', 'Data feedback gagal disimpan.');
+        } else{
+            return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
+        }
     }
 
     private function postFeedbackQuestion($text) { 
@@ -52,8 +57,13 @@ class FeedbackController extends Controller
     }
     public function update($id, Request $request)
     {
-        $this->updateFeedbackQuestion($id, $request->text);
-        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
+        $berhasil =  $this->updateFeedbackQuestion($id, $request->text);
+
+        if( !$berhasil){
+            return redirect()->route('feedback.index')->with('error', 'Data feedback gagal disimpan.');
+        }else{
+            return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil disimpan.');
+        }
     }
 
     private function updateFeedbackQuestion($id, $text) { 
@@ -73,7 +83,6 @@ class FeedbackController extends Controller
                 $feedback->update([
                     'text' => $text,
                 ]);
-
                 return true;
             } else {
                 return false;
@@ -84,8 +93,13 @@ class FeedbackController extends Controller
     }
     public function hapus($id)
     {
-        $this->deleteFeedbackquestion($id);
-        return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil dihapus.');
+        $berhasil = $this->deleteFeedbackquestion($id);
+        
+        if( !$berhasil ){
+            return redirect()->route('feedback.index')->with('error', 'Data feedback gagal dihapus.');
+        }else{
+            return redirect()->route('feedback.index')->with('success', 'Data feedback berhasil dihapus.');
+        }
     }
 
     private function deleteFeedbackquestion($id) { 

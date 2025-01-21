@@ -59,6 +59,11 @@ use Illuminate\Support\Facades\Log;
                     $request->jobcode,
                     $request->password,
                 );
+                if($berhasil){
+                    return redirect()->route('peserta.index')->with('success', 'Data peserta berhasil disimpan.');
+                }else{
+                    return redirect()->route('peserta.index')->with('error', 'Data peserta gagal disimpan.');
+                }
             } else {
                 $validated = $request->validate([
                     'nama' => 'required|string|max:255',
@@ -128,7 +133,6 @@ use Illuminate\Support\Facades\Log;
                         $token,
                         $nama
                     );
-
                     return true;
                 } else {
                     return false;
@@ -189,7 +193,6 @@ use Illuminate\Support\Facades\Log;
                         $token,
                         $nama
                     );
-
                     return true;
                 } else {
                     return false;
@@ -227,7 +230,6 @@ use Illuminate\Support\Facades\Log;
                     'user_type' => $userType,
                     'user_role' => 'peserta'
                 ]);
-                    
                 return true;
             } else {
                 return false;

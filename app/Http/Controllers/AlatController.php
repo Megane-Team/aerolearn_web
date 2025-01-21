@@ -21,10 +21,14 @@ class AlatController extends Controller
         // Alat::create([
         //     'nama' => $request->nama,
         // ]);
-        $this->postAlat(
+        $berhasil = $this->postAlat(
             $request->nama
         );
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil disimpan.');
+        if (!$berhasil) {
+            return redirect()->route('alat.index')->with('error', 'Data alat gagal disimpan.');
+        }else{
+            return redirect()->route('alat.index')->with('success', 'Data alat berhasil disimpan.');
+        }
     }
 
     private function postAlat($nama) { 
@@ -57,11 +61,16 @@ class AlatController extends Controller
         // $alat = Alat::findOrFail($id);
         // $alat->nama = $request->nama;
         // $alat->save();
-        $this->updateDataUser(
+        $berhasil = $this->updateDataUser(
             $id,
             $request->nama
         );
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil disimpan.');
+
+        if( !$berhasil ){
+            return redirect()->route('alat.index')->with('error', 'Data alat gagal disimpan.');
+        }else{
+            return redirect()->route('alat.index')->with('success', 'Data alat berhasil disimpan.');
+        }
     }
 
     private function updateDataUser($id, $nama) { 
@@ -92,8 +101,12 @@ class AlatController extends Controller
     {
         // $alat = Alat::findOrFail($id);
         // $alat->delete();
-        $this->deleteDataAlat($id);
-        return redirect()->route('alat.index')->with('success', 'Data peserta berhasil dihapus.');
+        $berhasil = $this->deleteDataAlat($id);
+        if( !$berhasil){
+            return redirect()->route('alat.index')->with('error', 'Data alat gagal dihapus.');
+        }else{
+            return redirect()->route('alat.index')->with('success', 'Data alat berhasil dihapus.');
+        }
     }
     private function deleteDataAlat($id) { 
         try { 

@@ -64,8 +64,13 @@ class QuestionController extends Controller
         // ]);
         // Redirect kembali dengan pesan sukses
 
-        $this->postDataQuestion($request);
-        return back()->with('success', 'Data berhasil disimpan.');
+        $berhasil = $this->postDataQuestion($request);
+
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal disimpan.');
+        }else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function postDataQuestion(Request $request) { 
@@ -170,8 +175,12 @@ class QuestionController extends Controller
 
     public function hapus($id)
     {
-        $this->deleteDataTraining($id);
-        return back()->with('success', 'Data berhasil dihapus.');
+        $berhasil = $this->deleteDataTraining($id);
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal dihapus.');
+        }else{
+            return back()->with('success', 'Data berhasil dihapus.');
+        }
     }
 
     private function deleteDataTraining($id) { 
@@ -185,6 +194,7 @@ class QuestionController extends Controller
             if ($response->successful()) { 
                 $data = Question::findOrFail($id);
                 $data->delete();
+                return true;
             } else {
                 return false;
             }
