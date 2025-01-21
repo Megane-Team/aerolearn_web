@@ -23,13 +23,18 @@ class PelatihanController extends Controller
             'koordinator' => 'required|string|max:255',
             'kategori' => 'required',
         ]);
-        $this->postDataTraining(
+        $berhasil = $this->postDataTraining(
             $request->nama,
             $request->deskripsi,
             $request->koordinator,
             $request->kategori
         );
-        return back()->with('success', 'Data berhasil disimpan.');
+
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal disimpan.');
+        }else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function postDataTraining($nama, $deskripsi, $koordinator, $kategori) { 
@@ -75,14 +80,19 @@ class PelatihanController extends Controller
             'koordinator' => 'required|string|max:255',
             'kategori' => 'required',
         ]);
-        $this->updateDataTraining(
+        $berhasil = $this->updateDataTraining(
             $id,
             $request->nama,
             $request->deskripsi,
             $request->koordinator,
             $request->kategori
         );
-        return back()->with('success', 'Data berhasil disimpan.');
+
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal disimpan.');
+        }else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function updateDataTraining($id, $nama, $deskripsi, $koordinator, $kategori) { 
@@ -107,7 +117,6 @@ class PelatihanController extends Controller
                     'koordinator' => $koordinator,
                     'kategori' => $kategori,
                 ]);
-
                 return true;
             } else {
                 return false;
@@ -120,8 +129,12 @@ class PelatihanController extends Controller
     {
         // $pelatihan = Pelatihan::findOrFail($id);
         // $pelatihan->delete();
-        $this->deleteDataTraining($id);
-        return back()->with('success', 'Data berhasil dihapus.');
+        $berhasil = $this->deleteDataTraining($id);
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal dihapus.');
+        }else{
+            return back()->with('success', 'Data berhasil dihapus.');
+        }
     }
 
     private function deleteDataTraining($id) { 
@@ -133,9 +146,10 @@ class PelatihanController extends Controller
                 'Authorization' => 'Bearer ' . $token,
             ])->delete($url . '/training/delete/' . $id,);
             if ($response->successful()) { 
-                $exam = Exam::where('id_pelatihan', $id)->delete();
+                Exam::where('id_pelatihan', $id)->delete();
                 $pelatihan = Pelatihan::findOrFail($id); 
                 $pelatihan->delete();
+                return true;
             } else {
                 return false;
             }

@@ -27,16 +27,16 @@ class UserController extends Controller
         );
 
         if($response){
-        User::create([
-            'nama' => $validated['nama'],
-            'id_eksternal' => null,
-            'id_karyawan' => null,
-            'email' => $validated['email'],
-            'password' => Hash::make($request->password),
-            'user_type' => 'internal',
-            'user_role' => $validated['user_role'],
-        ]);
-        return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
+            User::create([
+                'nama' => $validated['nama'],
+                'id_eksternal' => null,
+                'id_karyawan' => null,
+                'email' => $validated['email'],
+                'password' => Hash::make($request->password),
+                'user_type' => 'internal',
+                'user_role' => $validated['user_role'],
+            ]);
+            return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
         }else{
             return redirect()->route('user.index')->with('error', 'Data peserta gagal disimpan.');
         }
@@ -80,11 +80,16 @@ class UserController extends Controller
         //     $user->password = Hash::make($request->password);
         // }
         // $user->save();
-        $this->updateDataUser(
+        $berhasil = $this->updateDataUser(
             $id,
             $request
         );
-        return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
+
+        if( !$berhasil ){
+            return redirect()->route('user.index')->with('error', 'Data peserta gagal disimpan.');
+        }else{
+            return redirect()->route('user.index')->with('success', 'Data peserta berhasil disimpan.');
+        }
     }
     
     private function updateDataUser($id, Request $request) { 
@@ -124,8 +129,12 @@ class UserController extends Controller
     {
         // $user = User::findOrFail($id);
         // $user->delete();
-        $this->deleteDataUser($id);
-        return redirect()->route('user.index')->with('success', 'Data peserta berhasil dihapus.');
+        $berhasil = $this->deleteDataUser($id);
+        if( !$berhasil){
+            return redirect()->route('user.index')->with('error', 'Data peserta gagal dihapus.');
+        }else{
+            return redirect()->route('user.index')->with('success', 'Data peserta berhasil dihapus.');
+        }
     }
 
     private function deleteDataUser($id) { 

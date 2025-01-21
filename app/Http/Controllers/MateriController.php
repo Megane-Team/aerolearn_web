@@ -34,7 +34,7 @@ class MateriController extends Controller
             
         // }
 
-        $this->postMateriTraining(
+        $berhasil = $this->postMateriTraining(
             $validated['judul'],
             $validated['id_pelatihan'],
             $request->hasFile('materi') ? $request->file('materi') : null
@@ -49,7 +49,11 @@ class MateriController extends Controller
         // ]);
 
         // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Data berhasil disimpan.');
+        if(!$berhasil){
+            return back()->with('error', 'Data gagal disimpan.');
+        }else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function postMateriTraining($judul, $id_pelatihan, $file) { 
@@ -125,14 +129,19 @@ class MateriController extends Controller
         //     'link' => $materiFile,
         // ]);
 
-        $this->updateMateriTraining(
+        $berhasil = $this->updateMateriTraining(
             $validated['judul'],
             $id,
             $request->hasFile('materi') ? $request->file('materi') : null
         );
 
         // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Data berhasil disimpan.');
+        if( !$berhasil ){
+            return back()->with('error', 'Data gagal disimpan.');
+        }
+        else{
+            return back()->with('success', 'Data berhasil disimpan.');
+        }
     }
 
     private function updateMateriTraining($judul, $id, $file) { 
@@ -183,8 +192,12 @@ class MateriController extends Controller
     }
     public function hapus($id)
     {
-        $this->deleteDataMateri($id);
-        return back()->with('success', 'Data berhasil dihapus.');
+        $berhasil = $this->deleteDataMateri($id);
+        if( !$berhasil){
+            return back()->with('error', 'Data gagal dihapus.');
+        }else{
+            return back()->with('success', 'Data berhasil dihapus.');
+        }
     }
 
     private function deleteDataMateri($id) { 
