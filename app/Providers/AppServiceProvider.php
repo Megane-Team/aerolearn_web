@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         //     'email' => 'admin@example.com',
         // ], [
         //     'nama' => 'admin',
-        //     'password' => Hash::make('admin'),
+        //     'password' => Hash::make('admin123'),
         //     'user_role' => 'admin'
         // ]);
     }
