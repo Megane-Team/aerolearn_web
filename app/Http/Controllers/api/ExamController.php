@@ -34,23 +34,12 @@ class ExamController extends Controller
             ], 401);
         }
     }
-    public function menjawab(Request $request, $id = null): JsonResponse
+    public function menjawab(Request $request): JsonResponse
     {
 
         $jb = JawabanBenar::where('id_question', $request->id_question)->first();
         $selectedoption = OpsiJawaban::find($request->id_opsi_jawaban);
         $is_benar = $jb->text == $selectedoption->jawaban ? 'benar' : 'salah';
-
-        if ($id) {
-            Jawaban::where('id', $id)->update([
-                'jawaban_benar' => $jb->id,
-                'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
-                'id_opsi_jawaban' => $request->id_opsi_jawaban,
-                'id_peserta' => $request->id_peserta,
-                'id_question' => $request->id_question,
-                'is_benar' => $is_benar
-            ]);
-        } else {
             Jawaban::create([
                 'jawaban_benar' => $jb->id,
                 'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
@@ -59,7 +48,28 @@ class ExamController extends Controller
                 'id_question' => $request->id_question,
                 'is_benar' => $is_benar
             ]);
-        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+        ], 200);
+    }
+
+    public function update_jawaban(Request $request, $id): JsonResponse
+    {
+
+        $jb = JawabanBenar::where('id_question', $request->id_question)->first();
+        $selectedoption = OpsiJawaban::find($request->id_opsi_jawaban);
+        $is_benar = $jb->text == $selectedoption->jawaban ? 'benar' : 'salah';
+
+            Jawaban::where('id', $id)->update([
+                'jawaban_benar' => $jb->id,
+                'id_pelaksanaan_pelatihan' => $request->id_pelaksanaan_pelatihan,
+                'id_opsi_jawaban' => $request->id_opsi_jawaban,
+                'id_peserta' => $request->id_peserta,
+                'id_question' => $request->id_question,
+                'is_benar' => $is_benar
+            ]);
 
         return response()->json([
             'statusCode' => 200,
