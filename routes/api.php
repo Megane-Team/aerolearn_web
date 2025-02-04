@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 // Route::middleware('auth:sanctum')->group(function () {
     Route::post('/absensi/+', [AbsensiController::class, 'store']);
-    Route::post('/exam/question/jawaban/{id?}', [ExamController::class, 'menjawab']);
+    Route::post('/exam/question/jawaban/', [ExamController::class, 'menjawab']);
+    Route::post('/exam/question/jawaban/{id}', [ExamController::class, 'update_jawaban']);
     Route::post('/nilai/+', [NilaiController::class, 'adding']);
     Route::post('/feedback/+',[ExamController::class,'feedback']);
     Route::post('/sertifikat/+', [SertifikatController::class, 'sertifikatAdd']);
